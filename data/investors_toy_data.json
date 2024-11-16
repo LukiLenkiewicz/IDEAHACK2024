@@ -1,0 +1,32 @@
+[
+{
+    "name": "Neural Net Ventures",
+    "type": "Institution",
+    "focus": "Deep Learning",
+    "background": "Venture capital firm dedicated to deep learning startups with applications in image and speech recognition."
+},
+{
+    "name": "RoboTech Funds",
+    "type": "Institution",
+    "focus": "Robotics and AI",
+    "background": "Invests in AI and robotics startups, focusing on automation in manufacturing and logistics."
+},
+{
+    "name": "AI Healthcare Partners",
+    "type": "Institution",
+    "focus": "AI in Healthcare",
+    "background": "Invests in AI-driven healthcare innovations like diagnostic algorithms and personalized medicine."
+},
+{
+    "name": "AI Ethics Roundtable",
+    "type": "Institution",
+    "focus": "AI Ethics",
+    "background": "Supports ethical development and application of AI technologies."
+},
+{
+    "name": "Intelligent Systems Corp.",
+    "type": "Institution",
+    "focus": "General AI",
+    "background": "Funds projects aiming to develop general AI solutions for multi-industry applications."
+}
+]
