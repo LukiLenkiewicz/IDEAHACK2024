@@ -9,6 +9,7 @@ export default function Signup() {
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
+  const userTelephoneRef = useRef()
   const userNameRef = useRef();
   const userSureNameRef = useRef();
   const [errorMess, setError] = useState("");
@@ -96,6 +97,11 @@ export default function Signup() {
                     <label className="border-none relative">Password Confirmation</label>
                     <input className='p-2 border relative rounded-lg bg-gray-100  text-whitemt-2 ' type="password" ref={passwordConfirmRef} required />
                 </div>
+                <div className='flex flex-col pb-2'>
+                    <label className="border-none relative">Telefphone</label>
+                    <input className='rounded-lg border relative  bg-gray-100 p-2' type="text" ref={userTelephoneRef} required />
+                </div>
+
                 <div className='flex flex-col pb-2'>
                     <label className="border-none relative">Username</label>
                     <input className='rounded-lg border relative  bg-gray-100 p-2' type="text" ref={userNameRef} required />
