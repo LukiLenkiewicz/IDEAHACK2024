@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
 
 import uuid
 
@@ -21,6 +22,7 @@ class SignUpView(APIView):
         id = str(uuid.uuid4())
 
         request.data["id"] = id
+        print(request.data)
 
         if not all([name, email, password, user_type]):
             return Response(
@@ -49,6 +51,8 @@ class SignUpView(APIView):
         serializer = serializer_class(data=request.data)
         if serializer.is_valid():
             user_instance = serializer.save()
+            # Generate token for the new user
+
             return Response(
                 {
                     "email": user_instance.email,

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "ideahack.backend.base",
     "rest_framework",
     "corsheaders",
+    "rest_framework.authtoken",
 ]
 
 

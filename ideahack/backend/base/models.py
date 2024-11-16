@@ -8,7 +8,6 @@ class User(models.Model):
     surname = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
     password = models.TextField()
-
     id = models.IntegerField(primary_key=True)
 
     bio = models.TextField(blank=True)
