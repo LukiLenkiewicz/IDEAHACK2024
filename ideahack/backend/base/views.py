@@ -1,33 +1,33 @@
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login
 
-
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
+import uuid
 
 from ideahack.backend.base.models import User, Project, Company, Investor
 from ideahack.backend.base.serializer import map_user_type
+from ideahack.virtual_sibling.interact import VirtualSibling
 
 
 class SignUpView(APIView):
     def post(self, request):
-        # Extract user details from the request
         name = request.data.get("name")
         email = request.data.get("email")
         password = request.data.get("password")
-        password_2 = request.data.get("password_2")
         user_type = request.data.get("user_type")
+        id = str(uuid.uuid4())
 
-        # Validate all fields are provided
-        if not all([name, email, password, password_2, user_type]):
+        request.data["id"] = id
+
+        if not all([name, email, password, user_type]):
             return Response(
                 {"error": "All fields are required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Map user type to model and serializer
         try:
             model, serializer_class = map_user_type(user_type)
         except ValueError:
@@ -36,7 +36,6 @@ class SignUpView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Check if the email already exists across all models
         if any(
             m.objects.filter(email=email).exists() for m in [User, Company, Investor]
         ):
@@ -45,7 +44,8 @@ class SignUpView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Use serializer for validation and creation
+        request.data.pop("user_type", None)
+
         serializer = serializer_class(data=request.data)
         if serializer.is_valid():
             user_instance = serializer.save()
@@ -58,33 +58,28 @@ class SignUpView(APIView):
 
 class LoginView(APIView):
     def post(self, request):
-        # Extract email and password from the request
         email = request.data.get("email")
         password = request.data.get("password")
-        user_type = request.data.get("user_type")  # Expecting user_type to be specified
+        user_type = request.data.get("user_type")
 
-        # Validate required fields
         if not all([email, password, user_type]):
             return Response(
                 {"error": "Email, password, and user type are required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Validate user type
         if user_type not in ["user", "company", "investor"]:
             return Response(
                 {"error": "Invalid user type"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Determine the model based on user type
         user_model = {
             "user": User,
             "company": Company,
             "investor": Investor,
         }.get(user_type)
 
-        # Try to find the user in the specified model
         try:
             user_instance = user_model.objects.get(email=email)
         except user_model.DoesNotExist:
@@ -93,11 +88,9 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Use Django's authentication system to verify credentials
         user = authenticate(request, username=email, password=password)
         if user is not None:
-            # Log in the user and return a success response
-            login(request, user)  # Creates a session
+            login(request, user)
             return Response(
                 {"message": "Login successful", "email": user.email},
                 status=status.HTTP_200_OK,
@@ -107,3 +100,33 @@ class LoginView(APIView):
                 {"error": "Invalid credentials"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class ChatView(APIView):
+    def post(self, request, user_type, id):
+        # Log the incoming data for debugging
+        print(f"Received data: {request.data}")  # Debug line
+
+        # Ensure `request.data` is not empty and contains the expected field
+        user_query = request.data.get("query")
+
+        if not user_query:
+            return Response(
+                {"error": "Query parameter is missing."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        print(user_query)
+
+        virtual_sibling = VirtualSibling(
+            profile_id=id,
+            profile_type=user_type,
+            db_path="C:\\Users\\mikol\\PythonProjects\\IDEAHACK2024\\ideahack\\backend\\db.sqlite3",
+        )
+
+        answer = virtual_sibling.query(user_query=user_query)
+
+        print(answer)
+        return Response(
+            {"message": "ok", "answer": answer},
+            status=status.HTTP_200_OK,
+        )

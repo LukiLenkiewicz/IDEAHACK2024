@@ -6,16 +6,17 @@ from django.db import models
 
 class User(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
-    id_user = models.IntegerField()
     email = models.EmailField()
     password = models.TextField()
+
+    id = models.IntegerField(primary_key=True)
 
     description = models.TextField(blank=True)
     experience = models.TextField(blank=True)
     skills = models.TextField(blank=True)
 
-    website = models.URLField(max_length=200)
-    social_media = models.URLField(max_length=200)
+    website = models.URLField(max_length=200, blank=True)
+    social_media = models.URLField(max_length=200, blank=True)
 
     def __str__(self):
         return f"{self.name}  {self.surname}"
@@ -26,7 +27,7 @@ class User(models.Model):
 
 class Project(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
-    id_project = models.IntegerField()
+    id = models.IntegerField(primary_key=True)
 
     description = models.TextField(blank=True)
     field = models.TextField(blank=True)
@@ -40,8 +41,9 @@ class Project(models.Model):
 class Company(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
-    id_company = models.IntegerField()
     password = models.TextField()
+
+    id = models.IntegerField(primary_key=True)
 
     description = models.TextField(blank=True)
 
@@ -56,8 +58,9 @@ class Company(models.Model):
 class Investor(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
-    id_investor = models.IntegerField()
     password = models.TextField()
+
+    id = models.IntegerField(primary_key=True)
 
     description = models.TextField(blank=True)
 

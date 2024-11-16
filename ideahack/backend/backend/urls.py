@@ -20,5 +20,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("ideahack.backend.base.urls")),  # Include your app's URLs
+    path("api/", include("base.urls")),  # Include your app's URLs
 ]
