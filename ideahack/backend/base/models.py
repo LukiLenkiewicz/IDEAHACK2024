@@ -8,7 +8,6 @@ class User(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
     password = models.TextField()
-
     id = models.IntegerField(primary_key=True)
 
     description = models.TextField(blank=True)
