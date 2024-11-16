@@ -14,7 +14,7 @@ class User(models.Model):
     experience = models.TextField(blank=True)
     skills = models.TextField(blank=True)
 
-    link = models.URLField(max_length=200)
+    link = models.URLField(max_length=200, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
@@ -50,14 +50,14 @@ class Posistion(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     available = models.BooleanField()
 
-    link = models.URLField(max_length=200)
+    link = models.URLField(max_length=200, blank=True)
     person_name = models.CharField(max_length=255, null=True, blank=True)
     person_surname = models.CharField(max_length=255, null=True, blank=True)
 
     project_id = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
-        related_name="id",
+        related_name="projects",
     )
 
 
@@ -70,7 +70,7 @@ class Company(models.Model):
 
     bio = models.TextField(blank=True)
 
-    link = models.URLField(max_length=200)
+    link = models.URLField(max_length=200, blank=True)
     location = models.TextField(blank=True)
 
     def __str__(self):
