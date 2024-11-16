@@ -1,18 +1,11 @@
 from django.contrib import admin
-from ideahack.backend.base.models import (
-    Engineer,
-    Researcher,
-    Project,
-    ResearchCenterRepresentative,
-    CompanyRepresentative,
-)
+from ideahack.backend.base.models import User, Project, Company, Investor
 
-admin.site.register(Engineer)
 
-admin.site.register(Researcher)
+admin.site.register(User)
 
 admin.site.register(Project)
 
-admin.site.register(ResearchCenterRepresentative)
+admin.site.register(Company)
 
-admin.site.register(CompanyRepresentative)
+admin.site.register(Investor)

@@ -1,92 +1,46 @@
+# serializers.py
 from rest_framework import serializers
-from .models import BookReaders, Book, Genre, History, UserGenre, AlgorithmRecomendations, BookGenres, Review, GenreShort 
-
-class BookReadersSerializer(serializers.ModelSerializer):
-    Usergenre =  serializers.SerializerMethodField() 
-    class Meta:
-        model = BookReaders
-        fields = '__all__'
-
-    def get_Usergenre(self, obj):
-        genres_id = UserGenre.objects.filter(Reader_ID=obj.Reader_ID).values_list('Genre_ID',flat=True)
-        genres_name =  GenreShort.objects.filter(Genre_ID__in=genres_id)
-        serializer = GenreSerializer(genres_name, many=True)
-        return serializer.data
-        
-class BookGenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserGenre
-        fields = '__all__'
+from .models import User, Company, Investor
 
 
-class BooksSerializer(serializers.ModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
+    password_2 = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Book
-        fields = '__all__'
+        fields = ["name", "surname", "email", "password", "password_2"]
+
+    def validate(self, data):
+        if data["password"] != data["password_2"]:
+            raise serializers.ValidationError("Passwords do not match.")
+        return data
 
 
-class HistorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = History
-        fields = '__all__'
-
-class GenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Genre
-        fields = ['Genre_Name']
-
-class BookGenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BookGenres
-        fields = ['Genre_Name']
-
-class BookSerializer(serializers.ModelSerializer):
-   
-    Auhtor_Name = serializers.CharField(source='Author.Author_Name', read_only=True)
-    BookGenre =  serializers.SerializerMethodField() 
-    #serializers.ListSerializer(source='Book_ID.Genre_ID.Genre_Name' , child=serializers.CharField())
-    # HERE ADD TP READ USER REVIEW 
-    class Meta:
-        model = Book
-        fields = ['Book_ID','Name','Description','Rating','Availability', 'NumberReviews','ImgSource','Auhtor_Name','BookGenre']
-
-    def get_BookGenre(self, obj):
-        genre_id = BookGenres.objects.filter(
-            Book_ID=obj.Book_ID).values_list('Genre_ID',flat=True)
-        selected_genres = Genre.objects.filter(Genre_ID__in=genre_id)
-        return  GenreSerializer(selected_genres, many=True).data
+class UserSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = User
+        fields = BaseSerializer.Meta.fields
 
 
-class HistorySerializer(serializers.ModelSerializer):
-    Name = serializers.CharField(source='Book_ID.Name', read_only=True)
-    Auhtor_Name = serializers.CharField(source='Book_ID.Author.Author_Name', read_only=True)
-    Book_Image =  serializers.CharField(source='Book_ID.ImgSource', read_only=True)
-    class Meta:
-        model = History
-        fields = ['AllRenatls_ID','Reader_ID','Date_Taken','Book_ID','Returned','Name','Auhtor_Name','Book_Image']
+class CompanySerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = Company
+        fields = BaseSerializer.Meta.fields + ["company_name"]  # Example extra field
 
 
-
-class AlogrithmSerializer(serializers.ModelSerializer):
-    Name = serializers.CharField(source='Book_ID.Name', read_only=True)
-    Auhtor_Name = serializers.CharField(source='Book_ID.Author.Author_Name', read_only=True)
-    Book_Image =  serializers.CharField(source='Book_ID.ImgSource', read_only=True)
-    class Meta:
-        model = AlgorithmRecomendations
-        fields = ['Alogritm_ID','Book_ID','Name','Auhtor_Name','Book_Image']
-
-class OFFTOPSerializer(serializers.ModelSerializer):
-    Name = serializers.CharField(source='Book_ID.Name', read_only=True)
-    Auhtor_Name = serializers.CharField(source='Book_ID.Author.Author_Name', read_only=True)
-    Book_Image =  serializers.CharField(source='Book_ID.ImgSource', read_only=True)
-    class Meta:
-        model = AlgorithmRecomendations
-        fields = ['Alogritm_ID','Book_ID','Name','Auhtor_Name','Book_Image']
+class InvestorSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = Investor
+        fields = BaseSerializer.Meta.fields + [
+            "investment_focus"
+        ]  # Example extra field
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Review
-        fields = ['Review']
+def map_user_type(user_type):
+    mapping = {
+        "user": (User, UserSerializer),
+        "company": (Company, CompanySerializer),
+        "investor": (Investor, InvestorSerializer),
+    }
+    if user_type not in mapping:
+        raise ValueError("Invalid user type")
+    return mapping[user_type]

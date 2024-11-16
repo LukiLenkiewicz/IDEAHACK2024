@@ -1,110 +1,109 @@
-from pickle import FALSE
-from sqlite3 import Date
-from tokenize import Name
-from django.shortcuts import render
-from django.http import JsonResponse
 from django.db import IntegrityError
+from django.contrib.auth import authenticate, login
 
-from rest_framework.decorators import api_view
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
-from ideahack.backend.base.models import (
-    Engineer,
-    Researcher,
-    Project,
-    ResearchCenterRepresentative,
-    CompanyRepresentative,
-)
-from ideahack.backend.backend_utils.views_utils import map_user_type
 
 
-class RegisterView(APIView):
+from ideahack.backend.base.models import User, Project, Company, Investor
+from ideahack.backend.base.serializer import map_user_type
+
+
+class SignUpView(APIView):
     def post(self, request):
+        # Extract user details from the request
         name = request.data.get("name")
-        surname = request.data.get("surname")
-        user_type = request.data.get("user_type")
         email = request.data.get("email")
         password = request.data.get("password")
         password_2 = request.data.get("password_2")
+        user_type = request.data.get("user_type")
 
-        if not all([name, surname, user_type, email, password, password_2]):
+        # Validate all fields are provided
+        if not all([name, email, password, password_2, user_type]):
             return Response(
-                {"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "All fields are required"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if password != password_2:
+        # Map user type to model and serializer
+        try:
+            model, serializer_class = map_user_type(user_type)
+        except ValueError:
             return Response(
-                {"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Invalid user type"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Check if the email already exists across all models
         if any(
-            model.objects.filter(email=email).exists()
-            for model in [
-                Researcher,
-                Engineer,
-                ResearchCenterRepresentative,
-                CompanyRepresentative,
-            ]
+            m.objects.filter(email=email).exists() for m in [User, Company, Investor]
         ):
             return Response(
                 {"error": "Email is already registered with another user type"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        try:
-            user_model = map_user_type(user_type)
-        except ValueError:
-            return Response(
-                {"error": "Invalid user type"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            user_instance = user_model.objects.create(
-                name=name,
-                surname=surname,
-                email=email,
-                # Add additional fields like bio, location, etc., or leave them as empty strings
-                bio="",
-                profileimg=None,  # You might want to handle the profile image field
-                location="",
-                work_expirience="",
-                research_papers="",
-                projects="",
-                linkedin="",
-                github="",
-                google_scholar="",
-                other_urls="",
-            )
-
-            # Optionally, if password handling is external, create a password field or a token here
-
-            # Return a success response
+        # Use serializer for validation and creation
+        serializer = serializer_class(data=request.data)
+        if serializer.is_valid():
+            user_instance = serializer.save()
             return Response(
                 {"email": user_instance.email, "status": "success"},
                 status=status.HTTP_201_CREATED,
             )
-
-        except IntegrityError as e:
-            # Handle any database integrity errors (e.g., duplicate entry or missing required fields)
-            return Response(
-                {"error": "Database error, please try again later."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-        except Exception as e:
-            # Handle any unforeseen errors (e.g., server issues)
-            return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
     def post(self, request):
+        # Extract email and password from the request
         email = request.data.get("email")
         password = request.data.get("password")
-        return Response(
-            {"email": email, "status": "success"}, status=status.HTTP_200_OK
-        )
+        user_type = request.data.get("user_type")  # Expecting user_type to be specified
+
+        # Validate required fields
+        if not all([email, password, user_type]):
+            return Response(
+                {"error": "Email, password, and user type are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Validate user type
+        if user_type not in ["user", "company", "investor"]:
+            return Response(
+                {"error": "Invalid user type"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Determine the model based on user type
+        user_model = {
+            "user": User,
+            "company": Company,
+            "investor": Investor,
+        }.get(user_type)
+
+        # Try to find the user in the specified model
+        try:
+            user_instance = user_model.objects.get(email=email)
+        except user_model.DoesNotExist:
+            return Response(
+                {"error": "Invalid credentials"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Use Django's authentication system to verify credentials
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            # Log in the user and return a success response
+            login(request, user)  # Creates a session
+            return Response(
+                {"message": "Login successful", "email": user.email},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"error": "Invalid credentials"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )

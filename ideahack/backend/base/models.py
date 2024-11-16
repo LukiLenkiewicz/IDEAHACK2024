@@ -8,6 +8,7 @@ class User(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     id_user = models.IntegerField()
     email = models.EmailField()
+    password = models.TextField()
 
     description = models.TextField(blank=True)
     experience = models.TextField(blank=True)
@@ -40,6 +41,7 @@ class Company(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
     id_company = models.IntegerField()
+    password = models.TextField()
 
     description = models.TextField(blank=True)
 
@@ -55,6 +57,7 @@ class Investor(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
     id_investor = models.IntegerField()
+    password = models.TextField()
 
     description = models.TextField(blank=True)
 
