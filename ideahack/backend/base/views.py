@@ -51,7 +51,6 @@ class SignUpView(APIView):
         serializer = serializer_class(data=request.data)
         if serializer.is_valid():
             user_instance = serializer.save()
-            # Generate token for the new user
 
             return Response(
                 {
@@ -100,8 +99,12 @@ class LoginView(APIView):
         if user is not None:
             login(request, user)
             return Response(
-                {"message": "Login successful", "email": user.email},
-                status=status.HTTP_200_OK,
+                {
+                    "email": user_instance.email,
+                    "type": user_type,
+                    "status": "success",
+                },
+                status=status.HTTP_201_CREATED,
             )
         else:
             return Response(
