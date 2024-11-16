@@ -7,13 +7,12 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ideahack.backend.backend.settin
 django.setup()
 
 from ideahack.backend.base.models import User, Project, Company, Investor
+from ideahack.backend.backend.settings import BASE_DIR
 import sqlite3
 
 
 # Connect to your SQLite database
-conn = sqlite3.connect(
-    r"C:\\Users\\mikol\\PythonProjects\\IDEAHACK2024\\ideahack\\backend\\db.sqlite3"
-)
+conn = sqlite3.connect(BASE_DIR / "db.sqlite3")
 cursor = conn.cursor()
 
 
@@ -27,6 +26,18 @@ user = User.objects.create(
     skills="Python, JavaScript, React, Node.js",
     website="https://johndoe.dev",
     social_media="https://linkedin.com/in/johndoe",
+)
+
+user = User.objects.create(
+    id=2,
+    name="Mikołaj Czachorowski",
+    email="mikolaj@example.com",
+    password="hashed_password",
+    description="NLP enterprenuer, ML/AI filantrop, Chat gpt prompter.",
+    experience="5 years of experience in prompt engineering, worked on various projects.",
+    skills="Python, NLP, Prompt",
+    website="https://mikolaj",
+    social_media="https://www.linkedin.com/in/mczachorowski/",
 )
 
 # Creating Project instance

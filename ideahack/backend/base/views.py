@@ -9,6 +9,7 @@ import uuid
 
 from ideahack.backend.base.models import User, Project, Company, Investor
 from ideahack.backend.base.serializer import map_user_type
+from ideahack.backend.backend.settings import BASE_DIR
 from ideahack.virtual_sibling.interact import VirtualSibling
 
 
@@ -120,7 +121,7 @@ class ChatView(APIView):
         virtual_sibling = VirtualSibling(
             profile_id=id,
             profile_type=user_type,
-            db_path="C:\\Users\\mikol\\PythonProjects\\IDEAHACK2024\\ideahack\\backend\\db.sqlite3",
+            db_path=BASE_DIR / "db.sqlite3",
         )
 
         answer = virtual_sibling.query(user_query=user_query)
