@@ -15,7 +15,6 @@ from ideahack.virtual_sibling.interact import VirtualSibling
 
 class SignUpView(APIView):
     def post(self, request):
-        name = request.data.get("name")
         email = request.data.get("email")
         password = request.data.get("password")
         user_type = request.data.get("user_type")
@@ -24,7 +23,7 @@ class SignUpView(APIView):
         request.data["id"] = id
         print(request.data)
 
-        if not all([name, email, password, user_type]):
+        if not all([email, password, user_type]):
             return Response(
                 {"error": "All fields are required"},
                 status=status.HTTP_400_BAD_REQUEST,
