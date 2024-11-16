@@ -1,0 +1,370 @@
+{
+    "engineers": [
+      {
+        "name": "Jane Smith",
+        "description": "Frontend engineer passionate about user interface design and performance optimization.",
+        "experience": {
+          "industry": "6 years in frontend development for e-commerce platforms.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["HTML", "CSS", "JavaScript", "Vue.js", "TypeScript"],
+        "professional_interests": ["UI/UX design", "accessibility", "frontend optimization"],
+        "website": "https://janesmith.dev",
+        "social_media": "https://linkedin.com/in/janesmith"
+      },
+      {
+        "name": "Carlos Ruiz",
+        "description": "Cloud infrastructure engineer with expertise in serverless architectures.",
+        "experience": {
+          "industry": "4 years in cloud infrastructure and DevOps for SaaS startups.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["AWS", "Docker", "Kubernetes", "Terraform"],
+        "professional_interests": ["Cloud computing", "automation", "microservices"],
+        "website": "https://carlosruiz.io",
+        "social_media": "https://linkedin.com/in/carlosruiz"
+      },
+      {
+        "name": "Emma Li",
+        "description": "Software engineer with a focus on artificial intelligence in mobile applications.",
+        "experience": {
+          "industry": "5 years in mobile app development with AI integration.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["Swift", "Python", "TensorFlow Lite", "Core ML"],
+        "professional_interests": ["Mobile AI", "iOS development", "app performance"],
+        "website": "https://emmali.dev",
+        "social_media": "https://linkedin.com/in/emmali"
+      },
+      {
+        "name": "Rahul Mehta",
+        "description": "Full-stack engineer experienced in scalable backend and API development.",
+        "experience": {
+          "industry": "7 years in backend and API development for tech firms.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["Python", "Django", "Flask", "PostgreSQL"],
+        "professional_interests": ["API design", "scalability", "data engineering"],
+        "website": "https://rahulmehta.tech",
+        "social_media": "https://linkedin.com/in/rahulmehta"
+      },
+      {
+        "name": "Lisa Tanaka",
+        "description": "Machine learning engineer developing tools for real-time data processing.",
+        "experience": {
+          "industry": "5 years in machine learning for financial tech applications.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["Python", "scikit-learn", "TensorFlow", "SQL"],
+        "professional_interests": ["Real-time ML", "financial tech", "predictive modeling"],
+        "website": "https://lisatanaka.ai",
+        "social_media": "https://linkedin.com/in/lisatanaka"
+      },
+      {
+        "name": "Ben Kingsley",
+        "description": "Data engineer focused on building data pipelines and storage solutions.",
+        "experience": {
+          "industry": "6 years in data engineering for media companies.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["Python", "Apache Spark", "Hadoop", "SQL"],
+        "professional_interests": ["Data lakes", "ETL", "data architecture"],
+        "website": "https://benkingsley.dev",
+        "social_media": "https://linkedin.com/in/benkingsley"
+      },
+      {
+        "name": "Sophie Wang",
+        "description": "Embedded systems engineer developing solutions for IoT devices.",
+        "experience": {
+          "industry": "5 years in embedded systems and IoT.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["C++", "Python", "MQTT", "Zigbee"],
+        "professional_interests": ["IoT", "edge computing", "sensor networks"],
+        "website": "https://sophiewang.io",
+        "social_media": "https://linkedin.com/in/sophiewang"
+      },
+      {
+        "name": "Liam Chen",
+        "description": "DevOps engineer with a passion for CI/CD and cloud automation.",
+        "experience": {
+          "industry": "5 years in CI/CD and cloud solutions for tech startups.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["Jenkins", "Ansible", "AWS", "Bash scripting"],
+        "professional_interests": ["CI/CD", "cloud automation", "DevOps culture"],
+        "website": "https://liamchen.dev",
+        "social_media": "https://linkedin.com/in/liamchen"
+      },
+      {
+        "name": "Ava Martinez",
+        "description": "Software developer specializing in cybersecurity for web applications.",
+        "experience": {
+          "industry": "4 years in cybersecurity and web application security.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["Python", "JavaScript", "OWASP", "encryption"],
+        "professional_interests": ["Web security", "encryption", "ethical hacking"],
+        "website": "https://avamartinez.com",
+        "social_media": "https://linkedin.com/in/avamartinez"
+      },
+      {
+        "name": "David Zhang",
+        "description": "Blockchain developer working on decentralized applications (DApps).",
+        "experience": {
+          "industry": "3 years in blockchain development for financial services.",
+          "academia": null,
+          "research_papers": null
+        },
+        "skills": ["Solidity", "Ethereum", "JavaScript", "web3.js"],
+        "professional_interests": ["Blockchain", "DeFi", "smart contracts"],
+        "website": "https://davidzhang.io",
+        "social_media": "https://linkedin.com/in/davidzhang"
+      }
+    ],
+    "researchers": [
+          {
+            "name": "Dr. Anna Koval",
+            "description": "Senior researcher exploring the applications of AI in medical diagnostics.",
+            "experience": {
+              "industry": null,
+              "academia": "8 years in healthcare AI, PhD in Medical Informatics.",
+              "research_papers": [
+                {
+                  "title": "Deep Learning for Medical Image Analysis",
+                  "journal": "Annual Review of Biomedical Engineering",
+                  "year": 2020,
+                  "url": "https://www.annualreviews.org/doi/10.1146/annurev-bioeng-062919-100100"
+                },
+                {
+                  "title": "Artificial Intelligence in Healthcare: Past, Present and Future",
+                  "journal": "Stroke and Vascular Neurology",
+                  "year": 2017,
+                  "url": "https://svn.bmj.com/content/2/4/230"
+                }
+              ]
+            },
+            "skills": ["Python", "TensorFlow", "Keras", "Medical Imaging"],
+            "professional_interests": ["Medical imaging", "predictive modeling", "healthcare AI"],
+            "website": "https://annakoval.research",
+            "social_media": "https://linkedin.com/in/annakoval"
+          },
+          {
+            "name": "Dr. Priya Ramesh",
+            "description": "AI researcher focusing on reinforcement learning and robotics.",
+            "experience": {
+              "industry": null,
+              "academia": "7 years in AI and robotics, postdoctoral researcher.",
+              "research_papers": [
+                {
+                  "title": "Deep Reinforcement Learning for Robotic Manipulation",
+                  "journal": "IEEE Transactions on Neural Networks and Learning Systems",
+                  "year": 2019,
+                  "url": "https://ieeexplore.ieee.org/document/8713881"
+                },
+                {
+                  "title": "Reinforcement Learning: An Introduction",
+                  "journal": "MIT Press",
+                  "year": 2018,
+                  "url": "https://mitpress.mit.edu/books/reinforcement-learning-second-edition"
+                }
+              ]
+            },
+            "skills": ["Python", "PyTorch", "ROS", "Reinforcement Learning"],
+            "professional_interests": ["Robotics", "reinforcement learning", "autonomous systems"],
+            "website": "https://priyaramesh.ai",
+            "social_media": "https://linkedin.com/in/priyaramesh"
+          },
+          {
+            "name": "Dr. Miguel Sousa",
+            "description": "Data scientist studying language models and semantic analysis.",
+            "experience": {
+              "industry": null,
+              "academia": "5 years in NLP, PhD in Computational Linguistics.",
+              "research_papers": [
+                {
+                  "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+                  "journal": "NAACL-HLT",
+                  "year": 2019,
+                  "url": "https://arxiv.org/abs/1810.04805"
+                },
+                {
+                  "title": "Attention Is All You Need",
+                  "journal": "NeurIPS",
+                  "year": 2017,
+                  "url": "https://arxiv.org/abs/1706.03762"
+                }
+              ]
+            },
+            "skills": ["Python", "NLP", "Transformers", "Semantic Analysis"],
+            "professional_interests": ["NLP", "LLMs", "semantics"],
+            "website": "https://miguelsousa.com",
+            "social_media": "https://linkedin.com/in/miguelsousa"
+          },
+          {
+            "name": "Dr. Hina Patel",
+            "description": "AI researcher exploring fairness and ethics in machine learning.",
+            "experience": {
+              "industry": null,
+              "academia": "6 years in ethical AI research, PhD in Computer Science.",
+              "research_papers": [
+                {
+                  "title": "Fairness and Abstraction in Sociotechnical Systems",
+                  "journal": "FAT*",
+                  "year": 2018,
+                  "url": "https://dl.acm.org/doi/10.1145/3287560.3287598"
+                },
+                {
+                  "title": "Algorithmic Fairness: A Counterfactual Perspective",
+                  "journal": "NeurIPS",
+                  "year": 2017,
+                  "url": "https://arxiv.org/abs/1703.06856"
+                }
+              ]
+            },
+            "skills": ["Python", "Fairness Metrics", "Ethical AI", "Bias Mitigation"],
+            "professional_interests": ["Ethical AI", "fairness", "data ethics"],
+            "website": "https://hinapatel.ethics",
+            "social_media": "https://linkedin.com/in/hinapatel"
+          },
+          {
+            "name": "Dr. Oliver Kim",
+            "description": "Researcher focusing on generative models and deep learning architectures.",
+            "experience": {
+              "industry": null,
+              "academia": "5 years in GANs and generative AI.",
+              "research_papers": [
+                {
+                  "title": "Generative Adversarial Nets",
+                  "journal": "NeurIPS",
+                  "year": 2014,
+                  "url": "https://arxiv.org/abs/1406.2661"
+                },
+                {
+                  "title": "Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks",
+                  "journal": "ICLR",
+                  "year": 2016,
+                  "url": "https://arxiv.org/abs/1511.06434"
+                }
+              ]
+            },
+            "skills": ["Python", "TensorFlow", "GANs", "Deep Learning"],
+            "professional_interests": ["GANs", "deep learning", "computer vision"],
+            "website": "https://oliverkim.ai",
+            "social_media": "https://linkedin.com/in/oliverkim"
+          },
+      {
+        "name": "Dr. Sophia Tan",
+        "description": "Researcher in multimodal AI, integrating vision and language.",
+        "experience": {
+          "industry": null,
+          "academia": "6 years in multimodal AI, PhD in Computer Vision.",
+          "research_papers": [
+            {
+              "title": "VQA: Visual Question Answering",
+              "journal": "International Journal of Computer Vision",
+              "year": 2017,
+              "url": "https://link.springer.com/article/10.1007/s11263-016-0966-6"
+            },
+            {
+              "title": "Image Captioning with Semantic Attention",
+              "journal": "IEEE Conference on Computer Vision and Pattern Recognition",
+              "year": 2016,
+              "url": "https://ieeexplore.ieee.org/document/7780870"
+            }
+          ]
+        },
+        "skills": ["Python", "PyTorch", "NLP", "Computer Vision"],
+        "professional_interests": ["Computer vision", "NLP", "multimodal AI"],
+        "website": "https://sophiatan.ai",
+        "social_media": "https://linkedin.com/in/sophiatan"
+      },
+      {
+        "name": "Dr. Arjun Shah",
+        "description": "Researcher in explainable AI, focusing on interpretable machine learning.",
+        "experience": {
+          "industry": null,
+          "academia": "8 years in interpretable ML, PhD in AI Ethics.",
+          "research_papers": [
+            {
+              "title": "Why Should I Trust You? Explaining the Predictions of Any Classifier",
+              "journal": "Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+              "year": 2016,
+              "url": "https://dl.acm.org/doi/10.1145/2939672.2939778"
+            },
+            {
+              "title": "Interpretable Machine Learning: A Guide for Making Black Box Models Explainable",
+              "journal": "Springer",
+              "year": 2019,
+              "url": "https://christophm.github.io/interpretable-ml-book/"
+            }
+          ]
+        },
+        "skills": ["Python", "Explainability Tools", "Model Interpretation", "Ethical AI"],
+        "professional_interests": ["Explainable AI", "interpretable models", "AI ethics"],
+        "website": "https://arjunshah.explain",
+        "social_media": "https://linkedin.com/in/arjunshah"
+      },
+      {
+        "name": "Dr. Lina Xu",
+        "description": "Researcher specializing in transfer learning and domain adaptation.",
+        "experience": {
+          "industry": null,
+          "academia": "7 years in transfer learning, PhD in Machine Learning.",
+          "research_papers": [
+            {
+              "title": "A Survey on Transfer Learning",
+              "journal": "IEEE Transactions on Knowledge and Data Engineering",
+              "year": 2010,
+              "url": "https://ieeexplore.ieee.org/document/5288526"
+            },
+            {
+              "title": "Unsupervised Domain Adaptation by Backpropagation",
+              "journal": "Proceedings of the 32nd International Conference on Machine Learning",
+              "year": 2015,
+              "url": "https://proceedings.mlr.press/v37/ganin15.html"
+            }
+          ]
+        },
+        "skills": ["Python", "Transfer Learning", "Domain Adaptation", "Machine Learning"],
+        "professional_interests": ["Transfer learning", "domain adaptation", "NLP"],
+        "website": "https://linaxu.ml",
+        "social_media": "https://linkedin.com/in/linaxu"
+      },
+      {
+        "name": "Dr. Emily Davis",
+        "description": "Researcher in adversarial machine learning and model robustness.",
+        "experience": {
+          "industry": null,
+          "academia": "6 years in adversarial ML, PhD in Security and Privacy.",
+          "research_papers": [
+            {
+              "title": "Explaining and Harnessing Adversarial Examples",
+              "journal": "International Conference on Learning Representations",
+              "year": 2015,
+              "url": "https://arxiv.org/abs/1412.6572"
+            },
+            {
+              "title": "Towards Evaluating the Robustness of Neural Networks",
+              "journal": "IEEE Symposium on Security and Privacy",
+              "year": 2018,
+              "url": "https://arxiv.org/abs/1608.04644"
+            }
+          ]
+        },
+        "skills": ["Python", "TensorFlow", "Adversarial Training", "Model Robustness"],
+        "professional_interests": ["Adversarial ML", "model robustness", "AI security"],
+        "website": "https://emilydavis.security",
+        "social_media": "https://linkedin.com/in/emilydavis"
+      }
+    ]
+}
