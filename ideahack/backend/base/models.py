@@ -48,7 +48,11 @@ class Company(models.Model):
     description = models.TextField(blank=True)
 
     projects = models.ForeignKey(
-        Project, on_delete=models.CASCADE, related_name="projects"
+        Project,
+        on_delete=models.CASCADE,
+        related_name="projects",
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
