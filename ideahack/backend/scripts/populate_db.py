@@ -51,10 +51,10 @@ project = Project.objects.create(
 
 # Creating Company instance
 company = Company.objects.create(
-    id=1,  # Make sure ID is unique
+    id=1,
     name="Tech Solutions Inc.",
     email="contact@techsolutions.com",
-    password="hashed_password",  # Use a hashed password in production (e.g., using Django's make_password)
+    password="hashed_password",
     description="We specialize in AI-driven marketing solutions.",
     projects=project,  # Associate with the created project
 )

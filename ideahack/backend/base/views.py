@@ -50,7 +50,11 @@ class SignUpView(APIView):
         if serializer.is_valid():
             user_instance = serializer.save()
             return Response(
-                {"email": user_instance.email, "status": "success"},
+                {
+                    "email": user_instance.email,
+                    "type": user_type,
+                    "status": "success",
+                },
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -130,3 +134,73 @@ class ChatView(APIView):
             {"message": "ok", "answer": answer},
             status=status.HTTP_200_OK,
         )
+
+
+class Settings(APIView):
+    def post(self, request, user_type, id):
+        if user_type == "user":
+            try:
+                user = User.objects.get(id=id)
+            except User.DoesNotExist:
+                return Response(
+                    {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+                )
+
+            description = request.data.get("description", user.description)
+            experience = request.data.get("experience", user.experience)
+            skills = request.data.get("skills", user.skills)
+            website = request.data.get("website", user.website)
+            social_media = request.data.get("social_media", user.social_media)
+
+            user.description = description
+            user.experience = experience
+            user.skills = skills
+            user.website = website
+            user.social_media = social_media
+            user.save()
+
+            return Response(
+                {"message": "User settings updated successfully."},
+                status=status.HTTP_200_OK,
+            )
+
+        elif user_type == "company":
+            try:
+                company = Company.objects.get(id=id)
+            except Company.DoesNotExist:
+                return Response(
+                    {"error": "Company not found."}, status=status.HTTP_404_NOT_FOUND
+                )
+
+            description = request.data.get("description", company.description)
+
+            company.description = description
+            company.save()
+
+            return Response(
+                {"message": "Company settings updated successfully."},
+                status=status.HTTP_200_OK,
+            )
+
+        elif user_type == "investor":
+            try:
+                investor = Investor.objects.get(id=id)
+            except Investor.DoesNotExist:
+                return Response(
+                    {"error": "Investor not found."}, status=status.HTTP_404_NOT_FOUND
+                )
+
+            description = request.data.get("description", investor.description)
+
+            investor.description = description
+            investor.save()
+
+            return Response(
+                {"message": "Investor settings updated successfully."},
+                status=status.HTTP_200_OK,
+            )
+
+        else:
+            return Response(
+                {"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST
+            )
