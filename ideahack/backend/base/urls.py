@@ -1,0 +1,9 @@
+# backend/base/urls.py
+from django.urls import path
+from ideahack.backend.base.views import LoginView, SignUpView, ChatView
+
+urlpatterns = [
+    path("signup/", SignUpView.as_view(), name="signup"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("chat/<str:user_type>/<int:id>/", ChatView.as_view(), name="chat-view"),
+]
