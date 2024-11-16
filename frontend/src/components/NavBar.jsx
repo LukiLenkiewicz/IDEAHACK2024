@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { AiOutlineMenuUnfold, AiOutlineClose } from 'react-icons/ai';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from "../../utilis/Auth";
+import { useAuth } from "../utilis/Auth";
 
 function Navbar() {
   const [nav, setNav] = useState(false)
