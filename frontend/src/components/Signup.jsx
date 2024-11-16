@@ -12,7 +12,6 @@ export default function Signup() {
   const navigate = useNavigate();
   const emailRef = useRef();
   const passwordRef = useRef();
-  const userNameRef = useRef();
   const [errorMess, setError] = useState("");
   const [userType, setUserType] = useState(null);
   const [loadingtype, setLoading] = useState(false);
@@ -88,10 +87,6 @@ export default function Signup() {
                 <div className='flex flex-col pb-2'>
                     <label className="border-none relative">Password</label>
                     <input className='p-2 border relative rounded-lg bg-gray-100  text-whitemt-2 ' type="password" ref={passwordRef} required />
-                </div>
-                <div className='flex flex-col pb-2'>
-                    <label className="border-none relative">Username</label>
-                    <input className='rounded-lg border relative  bg-gray-100 p-2' type="text" ref={userNameRef} required />
                 </div>
                 <div className='flex flex-col border-none relative pb-2'>
                     <label htmlFor="type">Type</label>
