@@ -7,7 +7,7 @@ import Login from './components/Login';
 import UpdateUserForm from './components/userSettings';
 import Chat from './components/Chat';
 import UserProfile from './pages/UserProfile';
-import { AuthProvider } from '../utilis/Auth';
+import { AuthProvider } from './utilis/Auth';
 
 function App() {
   return (
