@@ -4,24 +4,17 @@ from unittest.util import _MAX_LENGTH
 from django.db import models
 
 
-class _User(models.Model):
+class User(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
-    surname = models.CharField(max_length=255, null=True, blank=True)
-    email = models.EmailField()
     id_user = models.IntegerField()
-    bio = models.TextField(blank=True)
-    profileimg = models.ImageField(
-        upload_to="profile-images", default="blank-profile-picture.png"
-    )
-    location = models.CharField(max_length=100, blank=True)
-    work_expirience = models.TextField(blank=True)
-    research_papers = models.TextField(blank=True)
-    projects = models.TextField(blank=True)
+    email = models.EmailField()
 
-    linkedin = models.URLField(max_length=200)
-    github = models.URLField(max_length=200)
-    google_scholar = models.URLField(max_length=200)
-    other_urls = models.TextField(help_text="Enter other URLs separated by commas")
+    description = models.TextField(blank=True)
+    experience = models.TextField(blank=True)
+    skills = models.TextField(blank=True)
+
+    website = models.URLField(max_length=200)
+    social_media = models.URLField(max_length=200)
 
     def __str__(self):
         return f"{self.name}  {self.surname}"
@@ -30,37 +23,25 @@ class _User(models.Model):
         return [url.strip() for url in self.other_urls.split(",")]
 
 
-class Engineer(_User):
-    pass
-
-
-class Researcher(_User):
-    pass
-
-
 class Project(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     id_project = models.IntegerField()
-    bio = models.TextField(blank=True)
+
+    description = models.TextField(blank=True)
     field = models.TextField(blank=True)
     funds = models.IntegerField()
     available_positions = models.TextField(blank=True)
-    occupied_positions = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
 
 
-class _Representative(models.Model):
+class Company(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
-    id_representative = models.IntegerField()
-    bio = models.TextField(blank=True)
-    img = models.ImageField(
-        upload_to="profile-images", default="blank-profile-picture.png"
-    )
-    location = models.CharField(max_length=100, blank=True)
-    history = models.TextField(blank=True)
+    id_company = models.IntegerField()
+
+    description = models.TextField(blank=True)
 
     projects = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="projects"
@@ -70,9 +51,12 @@ class _Representative(models.Model):
         return self.name
 
 
-class CompanyRepresentative(_Representative):
-    pass
+class Investor(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    email = models.EmailField()
+    id_investor = models.IntegerField()
 
+    description = models.TextField(blank=True)
 
-class ResearchCenterRepresentative(_Representative):
-    pass
+    def __str__(self):
+        return self.name
