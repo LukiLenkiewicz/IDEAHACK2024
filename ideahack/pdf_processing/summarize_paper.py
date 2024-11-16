@@ -14,9 +14,7 @@ load_dotenv()
 system_prompt = (
     "You are a research paper summarizer. Read given paper, "
     "write a short summary, and give at least 3 ideally 5 keywords "
-    "that describe field of research from this paper. I need this "
-    "keywords to be very spefic because all of the papers will be "
-    "from the field of AI. "
+    "that describe field of research from this paper. "
     "Return answer in json format"
     "\n\n"
     "{context}"
@@ -55,5 +53,5 @@ def summarize_pdf(source: str = "https://arxiv.org/pdf/1706.03762") -> dict:
 
 
 if __name__ == "__main__":
-    out = summarize_pdf("")
+    out = summarize_pdf()
     print(out)
