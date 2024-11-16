@@ -11,7 +11,6 @@ from ideahack.backend.backend.settings import BASE_DIR
 import sqlite3
 
 
-# Connect to your SQLite database
 conn = sqlite3.connect(BASE_DIR / "db.sqlite3")
 cursor = conn.cursor()
 
@@ -29,14 +28,14 @@ user = User.objects.create(
 )
 
 user = User.objects.create(
-    id=2,
+    id=6,
     name="Mikołaj Czachorowski",
     email="mikolaj@example.com",
     password="hashed_password",
     description="NLP enterprenuer, ML/AI filantrop, Chat gpt prompter.",
     experience="5 years of experience in prompt engineering, worked on various projects.",
     skills="Python, NLP, Prompt",
-    website="https://mikolaj",
+    website="https://github.com/Micz26",
     social_media="https://www.linkedin.com/in/mczachorowski/",
 )
 
@@ -69,7 +68,18 @@ investor = Investor.objects.create(
     description="Experienced investor in tech startups, focusing on AI and software solutions.",
 )
 
-# Example of adding more users or modifying data if needed
-# user2 = User.objects.create(...)
+user2 = User.objects.create(...)
+
+user = User.objects.create(
+    id=9,
+    name="Lukasz Lenkiewicz",
+    email="lukasz@example.com",
+    password="hashed_password",
+    description="NLP enterprenuer, ML/AI filantrop, Chat gpt prompter.",
+    experience="5 years of experience in prompt engineering, worked on various projects.",
+    skills="Python, NLP, Prompt",
+    website="https://github.com/LukiLenkiewicz",
+    social_media="https://www.linkedin.com/in/lukasz-lenkiewicz/",
+)
 
 print("Data has been populated successfully.")

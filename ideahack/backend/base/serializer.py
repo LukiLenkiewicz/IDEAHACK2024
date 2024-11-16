@@ -17,15 +17,13 @@ class UserSerializer(BaseSerializer):
 class CompanySerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Company
-        fields = BaseSerializer.Meta.fields + ["company_name"]  # Example extra field
+        fields = BaseSerializer.Meta.fields
 
 
 class InvestorSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Investor
-        fields = BaseSerializer.Meta.fields + [
-            "investment_focus"
-        ]  # Example extra field
+        fields = BaseSerializer.Meta.fields
 
 
 def map_user_type(user_type):

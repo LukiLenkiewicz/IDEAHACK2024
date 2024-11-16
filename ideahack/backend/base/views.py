@@ -1,4 +1,3 @@
-from django.db import IntegrityError
 from django.contrib.auth import authenticate, login
 
 from rest_framework.response import Response
