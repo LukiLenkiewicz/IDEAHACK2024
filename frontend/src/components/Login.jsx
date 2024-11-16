@@ -1,20 +1,36 @@
 import React, { useRef, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios";
+import { useAuth } from "../../utilis/Auth";
 
 export default function Login() {
+
+    const { setUser } = useAuth();
     const emailRef = useRef();
     const passwordRef = useRef();
+    const [userType, setUserType] = useState(null);
+
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const types = [
+        { value: "User", label: "User" },
+        { value: "Company", label: "Company" },
+        { value: "Investor", label: "Investor" },
+      ];
+
+    const handleUserTypeChange = (value) => {
+        setUserType(value);
+      };
 
     async function handleSubmit(e) {
         e.preventDefault();
 
         const credentials = {
             email: emailRef.current.value,
-            password: passwordRef.current.value
+            password: passwordRef.current.value,
+            type: userType.value,
         };
 
         try {
@@ -28,9 +44,9 @@ export default function Login() {
             });
 
             if (response.status === 200) {
-                // Assuming the backend returns JWT tokens
-                localStorage.setItem('accessToken', response.data.access);
-                localStorage.setItem('refreshToken', response.data.refresh);
+                const {email: userEmail, type: userType } = response.data;
+                setUser({email: userEmail, type: userType});
+                localStorage.setItem("authUser", JSON.stringify({email: userEmail, type: userType}));
                 navigate('/');
             }
         } catch (err) {
@@ -57,14 +73,14 @@ export default function Login() {
                     <label className="border-none relative">Password</label>
                     <input className='p-2 border relative rounded-lg bg-gray-100  text-whitemt-2 ' type="password" ref={passwordRef} required />
                 </div>
-
+                <div className='flex flex-col border-none relative pb-2'>
+                    <label htmlFor="type">Type</label>
+                    <Select value={userType} onChange={handleUserTypeChange} options={types} />
+                </div>
                 <p className="text-center mt-4 border-none relative ">
                     Need an account? <Link to={"/signup"} className="underline"> Sign up</Link>
                 </p>
-                <p className="text-center mt-4 border-none relative ">
-                    <Link to={"/forgot-password"} className="underline"> Forgot password?</Link>
-                </p>
-                <button disabled={loading} onClick={handleSubmit} className='w-full my-5 py-2 border relative bg-teal-500 shadow-lg shadow-teal-500/50 hover:shadow-teal-500/40 text-white font-semibold rounded-lg'>SIGN IN</button>
+                <button disabled={loading} onClick={handleSubmit} className='w-full my-5 py-2 border relative bg-teal-500 shadow-lg shadow-teal-500/50 hover:shadow-teal-500/40 text-white font-semibold rounded-lg'>Sign in</button>
                 
             </form>
         </div>

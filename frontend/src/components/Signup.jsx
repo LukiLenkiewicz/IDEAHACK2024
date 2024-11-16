@@ -4,23 +4,23 @@ import React, { useRef, useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios";
 import Select from 'react-tailwindcss-select'
+import { useAuth } from "../../utilis/Auth";
 
 export default function Signup() {
+
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
   const emailRef = useRef();
   const passwordRef = useRef();
-  const passwordConfirmRef = useRef();
-  const userTelephoneRef = useRef()
   const userNameRef = useRef();
-  const userSureNameRef = useRef();
   const [errorMess, setError] = useState("");
   const [userType, setUserType] = useState(null);
   const [loadingtype, setLoading] = useState(false);
 
   const types = [
-    { value: "0", label: "User" },
-    { value: "1", label: "Inve" },
-    { value: "2", label: "RND" },
-    { value: "3", label: "Business" },
+    { value: "User", label: "User" },
+    { value: "Company", label: "Company" },
+    { value: "Investor", label: "Investor" },
   ];
 
   const handleUserTypeChange = (value) => {
@@ -29,12 +29,6 @@ export default function Signup() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    // Check if passwords match
-    if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-      setError("Passwords do not match");
-      return;
-    }
 
     // Ensure a user type is selected
     if (userType === null) {
@@ -45,8 +39,6 @@ export default function Signup() {
     const payload = {
       email: emailRef.current.value,
       password: passwordRef.current.value,
-      username: userNameRef.current.value,
-      surname: userSureNameRef.current.value,
       user_type: userType.value,
     };
 
@@ -55,16 +47,20 @@ export default function Signup() {
     setLoading(true);  // Start loading
 
     try {
-      // Use Axios to send POST request to your Django API
+
       const response = await axios.post("http://127.0.0.1:8000/api/signup/", payload, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      // Handle the response
+    
       if (response.status === 201) {
         console.log("Account created successfully!", response.data);
+    
+        const {email: userEmail, type: userType } = response.data;
+        setUser({email: userEmail, type: userType });
+        localStorage.setItem("authUser", JSON.stringify({email: userEmail, type: userType}));
+        navigate('/');
         setError("");  // Clear any existing error messages
       } else {
         setError(response.data.message || "Failed to create an account.");
@@ -94,34 +90,19 @@ export default function Signup() {
                     <input className='p-2 border relative rounded-lg bg-gray-100  text-whitemt-2 ' type="password" ref={passwordRef} required />
                 </div>
                 <div className='flex flex-col pb-2'>
-                    <label className="border-none relative">Password Confirmation</label>
-                    <input className='p-2 border relative rounded-lg bg-gray-100  text-whitemt-2 ' type="password" ref={passwordConfirmRef} required />
-                </div>
-                <div className='flex flex-col pb-2'>
-                    <label className="border-none relative">Telefphone</label>
-                    <input className='rounded-lg border relative  bg-gray-100 p-2' type="text" ref={userTelephoneRef} required />
-                </div>
-
-                <div className='flex flex-col pb-2'>
                     <label className="border-none relative">Username</label>
                     <input className='rounded-lg border relative  bg-gray-100 p-2' type="text" ref={userNameRef} required />
                 </div>
-                <div className='flex flex-col pb-2'>
-                    <label className="border-none relative">SureName</label>
-                    <input className='rounded-lg border relative  bg-gray-100 p-2' type="text" ref={userSureNameRef} required />
-                </div>
-
                 <div className='flex flex-col border-none relative pb-2'>
                     <label htmlFor="type">Type</label>
                     <Select value={userType} onChange={handleUserTypeChange} options={types} />
                 </div>
                 <p className="text-center pb-2 border-none relative ">
-                    aaa
-                    {/* Already have an account? <Link to={"/login"} className="underline"> Log In</Link> */}
+                    Already have an account? <Link to={"/login"} className="underline"> Log In</Link>
                 </p>
                 <button disabled={loadingtype} onClick={handleSubmit} 
                 className='w-full p-3 border relative bg-teal-500 shadow-lg shadow-teal-500/50 hover:shadow-teal-500/40 text-white font-semibold rounded-lg justify-center'>
-                SIGN IN</button>
+                SIGN UP</button>
             </form >
         </div>
     </div>

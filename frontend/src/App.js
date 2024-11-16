@@ -7,22 +7,26 @@ import Login from './components/Login';
 import UpdateUserForm from './components/userSettings';
 import Chat from './components/Chat';
 import UserProfile from './pages/UserProfile';
+import { AuthProvider } from '../utilis/Auth';
 
 function App() {
   return (
     <Router>
+      <AuthProvider>
       {/* Navbar is displayed on all pages */}
       {/* <Navbar /> */}
       {/* <PrivateRoute> */}
+      {/* <Route path='/profil' element={<UserProfile/>} userEmail="johndoe@example.com" /> */}
       
       <Routes>
         <Route path="/" element={<HomeS />} />
         <Route path="/userData" element={<UpdateUserForm />} />
         <Route path="/chat" element={<Chat />} />
+
         <Route path='/login' element={<Login/>} />
         <Route path='/signup' element={<Signup/>} />
-        <Route path='profil' element={<UserProfile/>} userEmail="johndoe@example.com" />
       </Routes>
+      </AuthProvider>
     </Router>
   );
 }
