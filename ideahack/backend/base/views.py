@@ -62,7 +62,6 @@ messages = [
 
 class SignUpView(APIView):
     def post(self, request):
-        name = request.data.get("name")
         email = request.data.get("email")
         password = request.data.get("password")
         user_type = request.data.get("user_type")
@@ -71,7 +70,7 @@ class SignUpView(APIView):
         request.data["id"] = id
         print(request.data)
 
-        if not all([name, email, password, user_type]):
+        if not all([email, password, user_type]):
             return Response(
                 {"error": "All fields are required"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -105,7 +104,7 @@ class SignUpView(APIView):
                     "type": user_type,
                     "status": "success",
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
