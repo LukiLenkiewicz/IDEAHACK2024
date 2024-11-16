@@ -4,7 +4,7 @@ from unittest.util import _MAX_LENGTH
 from django.db import models
 
 
-class User(models.Model):
+class _User(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     surname = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
@@ -18,8 +18,24 @@ class User(models.Model):
     research_papers = models.TextField(blank=True)
     projects = models.TextField(blank=True)
 
+    linkedin = models.URLField(max_length=200)
+    github = models.URLField(max_length=200)
+    google_scholar = models.URLField(max_length=200)
+    other_urls = models.TextField(help_text="Enter other URLs separated by commas")
+
     def __str__(self):
         return f"{self.name}  {self.surname}"
+
+    def get_urls(self):
+        return [url.strip() for url in self.other_urls.split(",")]
+
+
+class Engineer(_User):
+    pass
+
+
+class Researcher(_User):
+    pass
 
 
 class Project(models.Model):
@@ -31,11 +47,14 @@ class Project(models.Model):
     available_positions = models.TextField(blank=True)
     occupied_positions = models.TextField(blank=True)
 
+    def __str__(self):
+        return self.name
 
-class ResearchCenter(models.Model):
+
+class _Representative(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
-    id_center = models.IntegerField()
+    id_representative = models.IntegerField()
     bio = models.TextField(blank=True)
     img = models.ImageField(
         upload_to="profile-images", default="blank-profile-picture.png"
@@ -51,5 +70,9 @@ class ResearchCenter(models.Model):
         return self.name
 
 
-class Company(ResearchCenter):
+class CompanyRepresentative(_Representative):
+    pass
+
+
+class ResearchCenterRepresentative(_Representative):
     pass
