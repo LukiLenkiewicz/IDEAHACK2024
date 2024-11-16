@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ideahack-2024"
+version = "0.0.1"
+description = "IDEAHACK 2024"
+
+requires-python = ">= 3.8, <= 3.12"
+
+dependencies = [
+    "numpy ~= 1.26.4",
+    "pandas ~= 2.2.3",
+    "ruff == 0.6.2",
+    "streamlit==1.38.0",
+]
+
+
+[tool.setuptools]
+packages = ["ideahack"]
