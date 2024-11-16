@@ -4,13 +4,60 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-
+from django import forms
 import uuid
+from pydantic import BaseModel
+
 
 from ideahack.backend.base.models import User, Project, Company, Investor
 from ideahack.backend.base.serializer import map_user_type
 from ideahack.backend.backend.settings import BASE_DIR
 from ideahack.virtual_sibling.interact import VirtualSibling
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+client = OpenAI()
+
+class FormUser(BaseModel):
+    name: str
+    surname: str
+    # "bio": str,
+    # "experience": str,
+    # "skills": str,
+    # "link": str,
+    # "type": str,
+
+form = {
+            "name": None,
+            "surname": None,
+            # "bio": None,
+            # "experience": None,
+            # "skills": None,
+            # "link": None,
+            # "type": None,
+        }
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['name', 'surname']
+
+        
+system_prompt = f"""
+        You are a chatbot that helps users with creating their account. Use user's first 
+        message to fill as much information as possible. After first answers 
+        continue asking about not filled fields. Account is created when there are 
+        no None values in form: {form}. At the end display whole form so user can verify 
+        whether provided information is true or not. When form is filled say that they 
+        can type 'quit' to exit.
+        """
+
+messages = [
+            {"role": "system", "content": system_prompt},
+        ]
+
 
 
 class SignUpView(APIView):
@@ -211,3 +258,44 @@ class Settings(APIView):
             return Response(
                 {"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
+
+class ChatGPTView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Initialize form with default values
+        user_instance = User.objects.get(email='tmp@wp.pl')  # Fetch the User instance by email
+        print(user_instance)
+        message = request.data['message']
+
+        messages.append({"role": "user", "content": message})
+        response = client.beta.chat.completions.parse(
+            model="gpt-4o-mini",
+            messages=messages
+            )
+        chat_message = response.choices[0].message.content
+        messages.append({"role": "assistant", "content": chat_message})
+
+        if message.lower() == "quit":
+            print("SIEMMMA")
+            messages.append({"role": "user", "content": "Display full filled form in .json format."})
+            response = client.beta.chat.completions.parse(
+            model="gpt-4o-mini",
+            messages=messages,
+            response_format=FormUser
+            )
+            filled_form = response.choices[0].message.content
+            print(filled_form)
+            user_instance = User.objects.get(email='tmp@wp.pl')  # Fetch the User instance by email
+            form = UserForm(filled_form, instance=user_instance)
+            if form.is_valid():
+                form.save()  
+
+            return Response({
+            'message': chat_message,
+            }, status=status.HTTP_200_OK)
+
+
+        return Response({
+            'message': chat_message,
+        }, status=status.HTTP_200_OK)
