@@ -57,7 +57,7 @@ class SignUpView(APIView):
                     "type": user_type,
                     "status": "success",
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

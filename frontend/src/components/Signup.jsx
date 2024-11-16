@@ -53,7 +53,7 @@ export default function Signup() {
         },
       });
     
-      if (response.status === 201) {
+      if (response.status === 200) {
         console.log("Account created successfully!", response.data);
     
         const {email: userEmail, type: userType } = response.data;
