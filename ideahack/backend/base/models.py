@@ -16,7 +16,7 @@ class User(models.Model):
 
     link = models.URLField(max_length=200, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
-    keywords = models.TextField()
+    keywords = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.name}  {self.surname}"
@@ -41,7 +41,7 @@ class Project(models.Model):
     pitch_deck = models.TextField(blank=True)
     area_of_research = models.TextField(blank=True)
     cost_structure = models.PositiveBigIntegerField(blank=True)
-    keywords = models.TextField()
+    keywords = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -74,7 +74,8 @@ class Company(models.Model):
 
     link = models.URLField(max_length=200, blank=True)
     location = models.TextField(blank=True)
-    keywords = models.TextField()
+    keywords = models.TextField(blank=True)
+    services = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -92,7 +93,7 @@ class Investor(models.Model):
     portfolio = models.TextField(blank=True)
     interests = models.TextField(blank=True)
     preferences = models.TextField(blank=True)
-    keywords = models.TextField()
+    keywords = models.TextField(blank=True)
 
     def __str__(self):
         return self.name

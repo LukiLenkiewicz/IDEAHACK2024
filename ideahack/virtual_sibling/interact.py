@@ -22,12 +22,12 @@ class VirtualSibling:
 
         if self.profile_type == "user":
             cursor.execute(
-                """SELECT name, description, experience, skills, website, social_media FROM base_user WHERE id = ?""",
+                """SELECT name, surname, bio, experience, skills, link, type, keywords FROM base_user WHERE id = ?""",
                 (self.profile_id,),
             )
         elif self.profile_type == "company":
             cursor.execute(
-                """SELECT name, description FROM base_company WHERE id = ?""",
+                """SELECT name, bio, link, location, keywords, services FROM base_company WHERE id = ?""",
                 (self.profile_id,),
             )
 
@@ -38,22 +38,16 @@ class VirtualSibling:
             keys = (
                 [
                     "name",
-                    "description",
+                    "surname",
+                    "bio",
                     "experience",
                     "skills",
-                    "website",
-                    "social_media",
+                    "link",
+                    "type",
+                    "keywords",
                 ]
                 if self.profile_type == "user"
-                else [
-                    "name",
-                    "description",
-                    "services",
-                    "experience",
-                    "industry_keywords",
-                    "website",
-                    "social_media",
-                ]
+                else ["name", "bio", "link", "location", "keywords", "services"]
             )
             return json.dumps(dict(zip(keys, profile_data)), indent=4)
         else:
@@ -91,11 +85,11 @@ class VirtualSibling:
 
     def query(self, user_query):
         # Extract profile information
-        name, description = self.profile_data["name"], self.profile_data["description"]
+        name, description = self.profile_data["name"], self.profile_data["bio"]
         details = [
             self.profile_data[key]
             for key in self.profile_data
-            if key not in ["name", "description"]
+            if key not in ["name", "bio"]
         ]
 
         profile_info = (
@@ -123,7 +117,7 @@ class VirtualSibling:
 
         if self.responses["info_not_found"] in answer:
             # Scrape website for additional information
-            website = self.profile_data["website"]
+            website = self.profile_data["link"]
 
             if website:  # If website info was provided
                 answer = list(self._chat_with_website(website, user_query).values())[0]
