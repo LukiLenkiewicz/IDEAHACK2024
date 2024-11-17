@@ -1,5 +1,7 @@
+import ast
+
 from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
+from django.contrib.contenttypes.models import ContentType
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -29,21 +31,21 @@ client = OpenAI()
 class FormUser(BaseModel):
     name: str
     surname: str
-    # "bio": str,
-    # "experience": str,
-    # "skills": str,
-    # "link": str,
-    # "type": str,
+    bio: str
+    experience: str
+    skills: str
+    link: str
+    type: str
 
 
 form = {
     "name": None,
     "surname": None,
-    # "bio": None,
-    # "experience": None,
-    # "skills": None,
-    # "link": None,
-    # "type": None,
+    "bio": None,
+    "experience": None,
+    "skills": None,
+    "link": None,
+    "type": None,
 }
 
 
@@ -178,12 +180,11 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         model_dict = {
-            "User": User,
-            "Company": Company,
-            "Investor": Investor,
+            "user": User,
+            "company": Company,
+            "investor": Investor,
         }
-
-        user_model = model_dict[user_type]
+        user_model = model_dict[user_type.lower()]
 
         try:
             user_instance = user_model.objects.get(email=email)
@@ -241,84 +242,17 @@ class ChatView(APIView):
             )
 
 
-class Settings(APIView):
-    def post(self, request, user_type, id):
-        if user_type == "User":
-            try:
-                user = User.objects.get(id=id)
-            except User.DoesNotExist:
-                return Response(
-                    {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
-                )
-
-            description = request.data.get("description", user.description)
-            experience = request.data.get("experience", user.experience)
-            skills = request.data.get("skills", user.skills)
-            website = request.data.get("website", user.website)
-            social_media = request.data.get("social_media", user.social_media)
-
-            user.description = description
-            user.experience = experience
-            user.skills = skills
-            user.website = website
-            user.social_media = social_media
-            user.save()
-
-            return Response(
-                {"message": "User settings updated successfully."},
-                status=status.HTTP_200_OK,
-            )
-
-        elif user_type == "Company":
-            try:
-                company = Company.objects.get(id=id)
-            except Company.DoesNotExist:
-                return Response(
-                    {"error": "Company not found."}, status=status.HTTP_404_NOT_FOUND
-                )
-
-            description = request.data.get("description", company.description)
-
-            company.description = description
-            company.save()
-
-            return Response(
-                {"message": "Company settings updated successfully."},
-                status=status.HTTP_200_OK,
-            )
-
-        elif user_type == "Investor":
-            try:
-                investor = Investor.objects.get(id=id)
-            except Investor.DoesNotExist:
-                return Response(
-                    {"error": "Investor not found."}, status=status.HTTP_404_NOT_FOUND
-                )
-
-            description = request.data.get("description", investor.description)
-
-            investor.description = description
-            investor.save()
-
-            return Response(
-                {"message": "Investor settings updated successfully."},
-                status=status.HTTP_200_OK,
-            )
-
-        else:
-            return Response(
-                {"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-
 class ChatGPTView(APIView):
-    def post(self, request, *args, **kwargs):
-        # Initialize form with default values
-        user_instance = User.objects.get(
-            email="tmp@wp.pl"
-        )  # Fetch the User instance by email
+    def post(self, request, user_type, id):
+        model_dict = {
+            "user": User,
+            "company": Company,
+            "investor": Investor,
+        }
+        user_model = model_dict[user_type.lower()]
+        user_instance = user_model.objects.get(id=id)
         print(user_instance)
-        message = request.data["message"]
+        message = request.data.get("messages")
 
         messages.append({"role": "user", "content": message})
         response = client.beta.chat.completions.parse(
@@ -337,9 +271,8 @@ class ChatGPTView(APIView):
             )
             filled_form = response.choices[0].message.content
             print(filled_form)
-            user_instance = User.objects.get(
-                email="tmp@wp.pl"
-            )  # Fetch the User instance by email
+            filled_form = ast.literal_eval(filled_form)
+            user_instance = User.objects.get(email=user_instance.email)
             form = UserForm(filled_form, instance=user_instance)
             if form.is_valid():
                 form.save()
@@ -386,3 +319,84 @@ class Feed(APIView):
             {"message": "ok", "feed": results},
             status=status.HTTP_200_OK,
         )
+
+
+class CreateProject(APIView):
+    def post(self, request, user_type, id):
+        data = request.data
+
+        required_fields = [
+            "name",
+            "bio",
+            "requirements",
+            "email",
+            "area_of_research",
+            "cost_structure",
+            "keywords",
+        ]
+        missing_fields = [field for field in required_fields if field not in data]
+        if missing_fields:
+            return Response(
+                {"error": f"Missing required fields: {', '.join(missing_fields)}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        owner_model_map = {
+            "user": User,
+            "company": Company,
+            "investor": Investor,
+        }
+
+        owner_model = owner_model_map.get(user_type.lower())
+        if not owner_model:
+            return Response(
+                {
+                    "error": f"Invalid user_type. Must be one of {', '.join(owner_model_map.keys())}."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            owner = owner_model.objects.get(id=id)
+        except owner_model.DoesNotExist:
+            return Response(
+                {"error": f"Owner with id {id} not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        content_type = ContentType.objects.get_for_model(owner)
+
+        try:
+            project = Project.objects.create(
+                name=data.get("name"),
+                bio=data.get("bio"),
+                owner_type=user_type.lower(),
+                owner_id=owner.id,
+                content_type=content_type,
+                requirements=data.get("requirements"),
+                email=data.get("email"),
+                pitch_deck=data.get("pitch_deck", ""),
+                area_of_research=data.get("area_of_research", ""),
+                cost_structure=data.get("cost_structure", 0),
+                keywords=data.get("keywords", ""),
+                vector_id=data.get("vector_id", None),
+            )
+            return Response(
+                {
+                    "message": "Project created successfully.",
+                    "project": {
+                        "id": project.id,
+                        "name": project.name,
+                        "bio": project.bio,
+                        "owner_type": project.owner_type,
+                        "email": project.email,
+                        "requirements": project.requirements,
+                    },
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Failed to create project: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
