@@ -4,6 +4,8 @@ import { MainContainer, ChatContainer, MessageList, Message, MessageInput, Typin
 import "../Chat.css"
 
 function Tmp() {
+
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
     {
       message: "Hello, I'm your assistant :)! Ask me anything!",
@@ -62,7 +64,10 @@ function Tmp() {
             sender: "ChatGPT"
           }
         ]);
-      } else {
+      } else if (response.status === 201) {
+        navigate('/')
+      }
+      else {
         // Handle error response from Django backend
         console.error("Error:", data.error);
       }

@@ -288,7 +288,7 @@ class ChatGPTView(APIView):
 
             return Response(
                 {"message": chat_message, "id": id},
-                status=status.HTTP_200_OK,
+                status=status.HTTP_201_CREATED,
             )
 
         return Response(

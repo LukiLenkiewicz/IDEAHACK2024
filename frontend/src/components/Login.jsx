@@ -65,7 +65,7 @@ export default function Login() {
        
         <div className='flex items-center justify-center pt-10 pb-5'>
             <form className='max-w-[400px] w-full mx-auto rounded-lg bg-white p-10'>
-                <h2 className='text-4xl font-bold text-center py-5'>Bibliophile's Tool</h2>
+                <h2 className='text-4xl font-bold text-center py-5'>InCommon</h2>
                 {error && <div role="alert"> <div className="border relative  border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700"> <p>{error}</p> </div> </div>}
                 <div className='flex flex-col mb-4'>
                     <label className="border-none relative">Email</label>
