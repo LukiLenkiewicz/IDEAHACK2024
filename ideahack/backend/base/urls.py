@@ -8,6 +8,10 @@ from ideahack.backend.base.views import (
     Feed,
     CreateProject,
     MainPage,
+    UserDetailView,
+    ProjectDetailView,
+    CompanyDetailView,
+    InvestorDetailView,
 )
 
 urlpatterns = [
@@ -22,4 +26,8 @@ urlpatterns = [
         name="create-project",
     ),
     path("main/<str:user_type>/<int:id>/", MainPage.as_view(), name="main-page"),
+    path("regular_user/<int:id>/", UserDetailView.as_view(), name="regular-user"),
+    path("investor/<int:id>/", InvestorDetailView.as_view(), name="investor"),
+    path("company/<int:id>/", CompanyDetailView.as_view(), name="company"),
+    path("project/<int:id>/", ProjectDetailView.as_view(), name="project"),
 ]
