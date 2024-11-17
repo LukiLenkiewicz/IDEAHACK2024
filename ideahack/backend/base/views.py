@@ -13,12 +13,19 @@ from pydantic import BaseModel
 
 
 from ideahack.backend.base.models import User, Project, Company, Investor
-from ideahack.backend.base.serializer import map_user_type
+from ideahack.backend.base.serializer import (
+    map_user_type,
+    UserSerializer,
+    CompanySerializer,
+    ProjectSerializer,
+    InvestorSerializer,
+)
 from ideahack.backend.backend.settings import BASE_DIR
 from ideahack.virtual_sibling.interact import VirtualSibling
 from ideahack.profile_store import ProfileStoreHandler
 from ideahack.nls.vector_store import VectorStoreHandler
 from ideahack.nls.search_engine import HybridSearchSystem, BasicFeedSystem
+
 
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -292,8 +299,9 @@ class ChatGPTView(APIView):
 
 class Feed(APIView):
     def get(self, request):
-
-        search_query = request.query_params.get('search_query', '')  # Default to empty string if not provided  # Get the query parameter
+        search_query = request.query_params.get(
+            "search_query", ""
+        )  # Default to empty string if not provided  # Get the query parameter
         # search_query = request.data.get("search_query")
         print(search_query)
         sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -426,3 +434,66 @@ class MainPage(APIView):
             {"message": "ok", "feed": results, "id": id},
             status=status.HTTP_200_OK,
         )
+
+
+class UserDetailView(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                user = User.objects.get(id=id)
+                serializer = UserSerializer(user)
+                return Response(serializer.data)
+            except User.DoesNotExist:
+                return Response({"error": "User not found."}, status=404)
+        else:
+            users = User.objects.all()
+            serializer = UserSerializer(users, many=True)
+            return Response(serializer.data)
+
+
+# View for Company model
+class CompanyDetailView(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                company = Company.objects.get(id=id)
+                serializer = CompanySerializer(company)
+                return Response(serializer.data)
+            except Company.DoesNotExist:
+                return Response({"error": "Company not found."}, status=404)
+        else:
+            companies = Company.objects.all()
+            serializer = CompanySerializer(companies, many=True)
+            return Response(serializer.data)
+
+
+# View for Project model
+class ProjectDetailView(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                project = Project.objects.get(id=id)
+                serializer = ProjectSerializer(project)
+                return Response(serializer.data)
+            except Project.DoesNotExist:
+                return Response({"error": "Project not found."}, status=404)
+        else:
+            projects = Project.objects.all()
+            serializer = ProjectSerializer(projects, many=True)
+            return Response(serializer.data)
+
+
+# View for Investor model
+class InvestorDetailView(APIView):
+    def get(self, request, id):
+        if id:
+            try:
+                investor = Investor.objects.get(id=id)
+                serializer = InvestorSerializer(investor)
+                return Response(serializer.data)
+            except Investor.DoesNotExist:
+                return Response({"error": "Investor not found."}, status=404)
+        else:
+            investors = Investor.objects.all()
+            serializer = InvestorSerializer(investors, many=True)
+            return Response(serializer.data)

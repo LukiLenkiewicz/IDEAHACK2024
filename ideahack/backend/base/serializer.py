@@ -1,29 +1,30 @@
 # serializers.py
 from rest_framework import serializers
-from .models import User, Company, Investor
+from .models import User, Company, Investor, Project
 
 
-class BaseSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["name", "email", "password"]
-
-
-class UserSerializer(BaseSerializer):
-    class Meta(BaseSerializer.Meta):
         model = User
-        fields = BaseSerializer.Meta.fields
+        fields = "__all__"
 
 
-class CompanySerializer(BaseSerializer):
-    class Meta(BaseSerializer.Meta):
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
         model = Company
-        fields = BaseSerializer.Meta.fields
+        fields = "__all__"
 
 
-class InvestorSerializer(BaseSerializer):
-    class Meta(BaseSerializer.Meta):
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = "__all__"
+
+
+class InvestorSerializer(serializers.ModelSerializer):
+    class Meta:
         model = Investor
-        fields = BaseSerializer.Meta.fields
+        fields = "__all__"
 
 
 def map_user_type(user_type):
