@@ -10,6 +10,7 @@ import UserProfile from './pages/UserProfile';
 import { AuthProvider } from './utilis/Auth';
 import PrivateRoute from './utilis/PrivateRoute'
 import SearchBar from './components/Search';
+import HomeSData from './pages/HomeSData';
 
 function App() {
   return (
@@ -17,13 +18,22 @@ function App() {
       <AuthProvider>
       <Routes>
 
-      <Route path="/" element={
-          <PrivateRoute>
+      <Route path="/data_search" element={
+           <PrivateRoute>
+             <Navbar />
+             <HomeSData />
+          </PrivateRoute>
+          }
+        ></Route>
+        
+        <Route path="/" element={
+           <PrivateRoute>
              <Navbar />
              <HomeS />
           </PrivateRoute>
           }
         ></Route>
+
       {/* Navbar is displayed on all pages */}
       {/* <Navbar /> */}
       {/* <PrivateRoute> */}
@@ -36,11 +46,10 @@ function App() {
               </Route>
 
         <Route path="/search" element={
-            <PrivateRoute>
-               <Navbar />
-              <SearchBar />
-            </PrivateRoute>} >
-            </Route>
+            // <PrivateRoute>
+              //  <Navbar />
+              <SearchBar /> } ></Route>
+            {/* // </PrivateRoute>} > */}
         
         <Route path="/chat" element={<Chat />} />
 

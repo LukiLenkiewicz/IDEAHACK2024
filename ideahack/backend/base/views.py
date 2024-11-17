@@ -291,9 +291,11 @@ class ChatGPTView(APIView):
 
 
 class Feed(APIView):
-    def post(self, request):
-        search_query = request.data.get("search_query")
+    def get(self, request):
 
+        search_query = request.query_params.get('search_query', '')  # Default to empty string if not provided  # Get the query parameter
+        # search_query = request.data.get("search_query")
+        print(search_query)
         sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
 
         vector_store_handler = VectorStoreHandler(

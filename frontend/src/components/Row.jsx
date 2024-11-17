@@ -6,7 +6,8 @@ import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 export default function Row({title, list, rowID }) {
     
   const [projects, setProjects] = useState([]);
-
+  console.log("SIEMA", projects)
+  console.log(rowID)
   useEffect(() => {
     setProjects(list);
   }, [list]);
@@ -36,8 +37,10 @@ export default function Row({title, list, rowID }) {
           className='w-full h-full overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide relative'
         >
           {projects.map((item) => {
-             if (item.rowID === parseInt(rowID,10)) {
-              return <BookSlicer name={item.name} id ={item.id} desc={item.description} />
+             if (item.rowID == parseInt(rowID,10)) {
+
+
+              return <BookSlicer name={item.name} id ={item.id} desc={item.bio} />
              }
              return null
           })}
