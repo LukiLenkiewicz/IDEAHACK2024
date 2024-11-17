@@ -1,3 +1,5 @@
+import ast
+
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 
@@ -37,28 +39,28 @@ client = OpenAI()
 class FormUser(BaseModel):
     name: str
     surname: str
-    # "bio": str,
-    # "experience": str,
-    # "skills": str,
-    # "link": str,
-    # "type": str,
+    bio: str
+    experience: str
+    skills: str
+    link: str
+    type: str
 
 
 form = {
     "name": None,
     "surname": None,
-    # "bio": None,
-    # "experience": None,
-    # "skills": None,
-    # "link": None,
-    # "type": None,
+    "bio": None,
+    "experience": None,
+    "skills": None,
+    "link": None,
+    "type": None,
 }
 
 
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["name", "surname"]
+        fields = ["name", "surname", "bio", "experience", "skills", "link", "type"]
 
 
 system_prompt = f"""
@@ -326,21 +328,19 @@ class Settings(APIView):
 class ChatGPTView(APIView):
     def post(self, request, *args, **kwargs):
         # Initialize form with default values
-        user_instance = User.objects.get(
-            email="tmp@wp.pl"
-        )  # Fetch the User instance by email
-        print(user_instance)
-        message = request.data["message"]
+        user_email = request.data['authUser']['email']
+        user_type = request.data['authUser']['type']
 
+        message = request.data['apiRequestBody']["message"]
+        print(message)
         messages.append({"role": "user", "content": message})
         response = client.beta.chat.completions.parse(
             model="gpt-4o-mini", messages=messages
         )
         chat_message = response.choices[0].message.content
         messages.append({"role": "assistant", "content": chat_message})
-
+        print("hEJ")
         if message.lower() == "quit":
-            print("SIEMMMA")
             messages.append(
                 {"role": "user", "content": "Display full filled form in .json format."}
             )
@@ -349,20 +349,22 @@ class ChatGPTView(APIView):
             )
             filled_form = response.choices[0].message.content
             print(filled_form)
+            filled_form = ast.literal_eval(filled_form)
             user_instance = User.objects.get(
-                email="tmp@wp.pl"
-            )  # Fetch the User instance by email
+                email=user_email
+            )
             form = UserForm(filled_form, instance=user_instance)
             if form.is_valid():
+                print("ELO")
                 form.save()
 
             return Response(
-                {"message": chat_message, "id": id},
+                {"message": chat_message},
                 status=status.HTTP_201_CREATED,
             )
 
         return Response(
-            {"message": chat_message, "id": id},
+            {"message": chat_message},
             status=status.HTTP_200_OK,
         )
 

@@ -9,7 +9,7 @@ function Tmp() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([
     {
-      message: "Hello, I'm your assistant :)! Ask me anything!",
+      message: "Let's create your account, Tell me more about yourself ! :)",
       sentTime: "just now",
       sender: "ChatGPT"
     }
@@ -46,14 +46,19 @@ function Tmp() {
     };
 
     try {
-      const feed = JSON.parse(localStorage.getItem("authUser"));
-      console.log(feed)
-      const response = await fetch(`http://localhost:8000/api/chatgpt/${feed.type}/${feed.id}`, {
+      const authUser = JSON.parse(localStorage.getItem("authUser"));
+      const requestBody = {
+        authUser,            // Include the authentication user data
+        apiRequestBody       // Include the API request payload
+      };
+
+      
+      const response = await fetch('http://localhost:8000/api/chatgpt/', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(apiRequestBody)
+        body: JSON.stringify(requestBody)
       });
 
       const data = await response.json();

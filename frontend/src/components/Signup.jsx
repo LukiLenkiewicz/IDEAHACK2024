@@ -55,9 +55,9 @@ export default function Signup() {
       console.log(response)
       if (response.status === 200) {
         console.log("Account created successfully!", response.data);
-        const {email: email, type: type, id:id} = response.data;
-        handleUserChange({email: email, type: type, id, id})
-        localStorage.setItem("authUser", JSON.stringify({email: email, type: type, id:id}));
+        const {email: email, type: type} = response.data;
+        handleUserChange({email: email, type: type})
+        localStorage.setItem("authUser", JSON.stringify({email: email, type: type}));
         navigate('/chat');
         setError("");  // Clear any existing error messages
       } else {

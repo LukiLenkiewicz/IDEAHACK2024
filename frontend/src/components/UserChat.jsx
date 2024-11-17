@@ -39,11 +39,10 @@ const Chat = ({ room }) => {
     if (!newMessage.trim()) return;
 
     try {
-      const feed = JSON.parse(localStorage.getItem("authUser"));
 
       // Send the new message to the backend
       const response = await axios.post(
-        `http://localhost:8000/api/chat/${feed.type}/${feed.id}`,
+        `http://localhost:8000/api/chat/`,
         {
           query: newMessage,
         }
