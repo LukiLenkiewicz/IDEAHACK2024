@@ -58,7 +58,7 @@ export default function Signup() {
         const {email: userEmail, type: userType } = response.data;
         handleUserChange({email: userEmail, type: userType})
         localStorage.setItem("authUser", JSON.stringify({email: userEmail, type: userType}));
-        navigate('/');
+        navigate('/chat');
         setError("");  // Clear any existing error messages
       } else {
         setError(response.data.message || "Failed to create an account.");
@@ -74,10 +74,10 @@ export default function Signup() {
   return (
     <div className="relative w-full h-screen">
     <div className='w-full h-auto min-h-full bg-zinc-900/90'>
-      <img className=' absolute w-full h-full min-h-full object-cover mix-blend-overlay overflow-hidden' src={'https://media.istockphoto.com/photos/wooden-brown-books-shelves-with-a-lamp-picture-id1085770318'} alt="/" />
-        <div className='flex items-center justify-center h-auto pt-3 pb-2'>
+      <img className=' absolute w-full h-full min-h-full object-cover mix-blend-overlay pt-4 overflow-hidden' src={'https://media.istockphoto.com/photos/wooden-brown-books-shelves-with-a-lamp-picture-id1085770318'} alt="/" />
+        <div className='flex items-center justify-center h-auto pt- pb-2'>
             <form className='max-w-[400px] w-full mx-auto rounded-lg bg-white p-10'>
-                <h2 className='text-4xl font-bold text-center py-5'>XDDD Tool</h2>
+                <h2 className='text-4xl font-bold text-center py-5'>InCommon</h2>
                 {errorMess && <div role="alert"> <div className="border relative border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700"> <p>{errorMess}</p> </div> </div>}
                 <div className='flex flex-col pb-2'>
                     <label className="border-none relative">Email</label>

@@ -28,7 +28,7 @@ function Navbar() {
   return (
     <header className='w-full bg-gray-700'>
       <div className='justify-between mx-auto items-center h-24 flex max-w-screen-lg px-4 bg-gray-700'>
-        <h1 className='text-[#00df6e] font-bold text-2xl md:text-xl lg:text-2xl p-2'>Bibliophile's Tool</h1>
+        <h1 className='text-[#00df6e] font-bold text-2xl md:text-xl lg:text-2xl p-2'>InCommon</h1>
         <ul className='hidden md:flex'>
           <li className='p-3'>
             <Link to={"/"} className='text-[#00df6e] text-base'>Home</Link>
