@@ -181,16 +181,19 @@ class LoginView(APIView):
                 {"error": "Email, password, and user type are required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         if user_type not in ["User", "Company", "Investor"]:
             return Response(
                 {"error": "Invalid user type"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         model_dict = {
             "user": User,
             "company": Company,
             "investor": Investor,
         }
+
         user_model = model_dict[user_type.lower()]
 
         try:
@@ -200,14 +203,16 @@ class LoginView(APIView):
                 {"error": "Invalid credentials"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         the_user = user_model.objects.get(email=email, password=password)
+
         if the_user is not None:
             return Response(
                 {
                     "email": user_instance.email,
                     "type": user_type,
                     "status": "success",
-                    "id": id,
+                    "id": user_instance.id,
                 },
                 status=status.HTTP_200_OK,
             )
