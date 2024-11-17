@@ -18,10 +18,10 @@ function App() {
       <Routes>
 
       <Route path="/" element={
-          <PrivateRoute>
-             <Navbar />
+          // <PrivateRoute>
+            //  <Navbar />
              <HomeS />
-          </PrivateRoute>
+          // </PrivateRoute>
           }
         ></Route>
       {/* Navbar is displayed on all pages */}
@@ -36,11 +36,10 @@ function App() {
               </Route>
 
         <Route path="/search" element={
-            <PrivateRoute>
-               <Navbar />
-              <SearchBar />
-            </PrivateRoute>} >
-            </Route>
+            // <PrivateRoute>
+              //  <Navbar />
+              <SearchBar /> } ></Route>
+            {/* // </PrivateRoute>} > */}
         
         <Route path="/chat" element={<Chat />} />
 
