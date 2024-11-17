@@ -2,13 +2,15 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
+import uuid
+
 
 class User(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     surname = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
     password = models.TextField()
-    id = models.IntegerField(primary_key=True)
+    id = models.CharField(max_length=36, primary_key=True, default=uuid.uuid4)
 
     vector_id = models.IntegerField(null=True)
 
@@ -29,12 +31,12 @@ class User(models.Model):
 
 class Project(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
-    id = models.IntegerField(primary_key=True)
+    id = models.CharField(max_length=36, primary_key=True, default=uuid.uuid4)
 
     bio = models.TextField(blank=True)
 
     owner_type = models.TextField(blank=True)
-    owner_id = models.PositiveIntegerField()
+    owner_id = models.CharField(max_length=36)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     owner = GenericForeignKey("content_type", "owner_id")
 
@@ -51,7 +53,7 @@ class Project(models.Model):
 
 
 class Position(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.CharField(max_length=36, primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=255, null=True, blank=True)
     available = models.BooleanField()
 
@@ -71,7 +73,7 @@ class Company(models.Model):
     email = models.EmailField()
     password = models.TextField()
 
-    id = models.IntegerField(primary_key=True)
+    id = models.CharField(max_length=36, primary_key=True, default=uuid.uuid4)
 
     vector_id = models.IntegerField(null=True)
 
@@ -91,7 +93,7 @@ class Investor(models.Model):
     email = models.EmailField()
     password = models.TextField()
 
-    id = models.IntegerField(primary_key=True)
+    id = models.CharField(max_length=36, primary_key=True, default=uuid.uuid4)
 
     bio = models.TextField(blank=True)
 
