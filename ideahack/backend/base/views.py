@@ -68,7 +68,6 @@ class SignUpView(APIView):
         id = str(uuid.uuid4())
 
         request.data["id"] = id
-        print(request.data)
 
         if not all([email, password, user_type]):
             return Response(
@@ -114,19 +113,16 @@ class LoginView(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
         user_type = request.data.get("user_type")
-
         if not all([email, password, user_type]):
             return Response(
                 {"error": "Email, password, and user type are required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         if user_type not in ["user", "company", "investor"]:
             return Response(
                 {"error": "Invalid user type"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         user_model = {
             "user": User,
             "company": Company,
@@ -140,17 +136,15 @@ class LoginView(APIView):
                 {"error": "Invalid credentials"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        user = authenticate(request, username=email, password=password)
-        if user is not None:
-            login(request, user)
+        the_user = user_model.objects.get(email=email, password=password)
+        if the_user is not None:
             return Response(
                 {
                     "email": user_instance.email,
                     "type": user_type,
                     "status": "success",
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
             )
         else:
             return Response(
