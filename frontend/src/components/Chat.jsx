@@ -3,16 +3,10 @@ import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import { MainContainer, ChatContainer, MessageList, Message, MessageInput, TypingIndicator } from '@chatscope/chat-ui-kit-react';
 import "../Chat.css"
 
-const API_KEY = "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";
-
-const systemMessage = { //  Explain things like you're talking to a software professional with 5 years of experience.
-  "role": "system", "content": "Explain things like you're talking to a software professional with 2 years of experience."
-}
-
 function Tmp() {
   const [messages, setMessages] = useState([
     {
-      message: "Hello, I'm ChatGPT! Ask me anything!",
+      message: "Hello, I'm your assistant :)! Ask me anything!",
       sentTime: "just now",
       sender: "ChatGPT"
     }
@@ -45,33 +39,39 @@ function Tmp() {
     });
 
     const apiRequestBody = {
-      "model": "gpt-3.5-turbo",
-      "messages": [
-        systemMessage,
-        ...apiMessages
-      ]
+      "message": chatMessages[chatMessages.length - 1].message  // Send last message to Django
     };
 
-    await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + API_KEY,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(apiRequestBody)
-    }).then((data) => {
-      return data.json();
-    }).then((data) => {
-      setMessages([
-        ...chatMessages,
-        {
-          message: data.choices[0].message.content,
-          sender: "ChatGPT"
-        }
-      ]);
+    try {
+      const response = await fetch("http://localhost:8000/api/chatgpt/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiRequestBody)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Add ChatGPT's response to the messages
+        setMessages([
+          ...chatMessages,
+          {
+            message: data.message,
+            sender: "ChatGPT"
+          }
+        ]);
+      } else {
+        // Handle error response from Django backend
+        console.error("Error:", data.error);
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+    } finally {
       setIsTyping(false);
-    });
-  }
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen relative overflow-hidden">
