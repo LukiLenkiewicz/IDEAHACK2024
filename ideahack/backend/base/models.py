@@ -40,7 +40,7 @@ class Project(models.Model):
 
     requirements = models.TextField(blank=True)
     email = models.EmailField(max_length=200)
-    pitch_deck = models.TextField(blank=True)
+    pitch_deck = models.URLField(max_length=300, blank=True)
     area_of_research = models.TextField(blank=True)
     cost_structure = models.PositiveBigIntegerField(blank=True)
     keywords = models.TextField(blank=True)
