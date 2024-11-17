@@ -53,11 +53,8 @@ class ProfileStoreHandler:
         else:
             self.conn = sqlite3.connect(metadata_db_file)
             self.cursor = self.conn.cursor()
-
-    def add_project_profile(
-        self, profile_data, vector_store_handler: VectorStoreHandler
-    ):
-        # Combine profile data into a single string for vector creation
+            
+    def add_project_profile(self, profile_data, vector_store_handler: VectorStoreHandler):
         vector_data = f"""
         {profile_data['bio']}
         
@@ -68,38 +65,32 @@ class ProfileStoreHandler:
         {profile_data['keywords']}
         """.strip()
 
-        # Create vector from the combined profile data
+        # Create vector from profile bio
         embedding = self.sentence_model.encode(vector_data, convert_to_tensor=False)
-
         # Add vector to vector store and get vector_id
         vector_id = vector_store_handler.add_vector(embedding)
 
-        # Check if the project exists in the database
+        # Insert profile data into project_profiles table
         self.cursor.execute(
             """
-            SELECT id FROM base_project WHERE email = ?
+            INSERT INTO base_project (name, bio, owner_type, owner_id, requirements, email, pitch_deck, area_of_research, cost_structure, keywords, vector_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (profile_data["email"],),
+            (
+                profile_data["name"],
+                profile_data["bio"],
+                profile_data["owner_type"],
+                profile_data["owner_id"],
+                profile_data["requirements"],
+                profile_data["email"],
+                profile_data["pitch_deck"],
+                profile_data["area_of_research"],
+                profile_data["cost_structure"],
+                profile_data["keywords"],
+                vector_id,
+            ),
         )
-
-        project = self.cursor.fetchone()
-
-        if project:
-            project_id = project[0]  # The ID of the project found
-
-            # Update the project with the vector_id
-            self.cursor.execute(
-                """
-                UPDATE base_project 
-                SET vector_id = ? 
-                WHERE id = ?
-                """,
-                (vector_id, project_id),
-            )
-            self.conn.commit()
-            print(f"Project with email {profile_data['email']} updated with vector_id.")
-        else:
-            print(f"Project with email {profile_data['email']} not found.")
+        self.conn.commit()
 
     def add_user_profile(self, profile_data, vector_store_handler: VectorStoreHandler):
         vector_data = f"""
@@ -220,17 +211,9 @@ class ProfileStoreHandler:
             )
             row = self.cursor.fetchone()
             if row:
-                profile_type = (
-                    "USER"
-                    if table == "base_user"
-                    else "COMPANY"
-                    if table == "base_company"
-                    else "PROJECT"
-                )
-                return (
-                    profile_type,
-                    {field: row[idx] for idx, field in enumerate(fields)}
-                    | {"rowID": row_id},
-                )
+                profile_type = "USER" if table == "base_user" else "COMPANY" if table == "base_company" else "PROJECT"
+                return (profile_type, {field: row[idx] for idx, field in enumerate(fields)} | {
+                    "rowID": row_id
+                })
 
         return None
