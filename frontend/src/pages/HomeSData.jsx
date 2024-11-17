@@ -10,6 +10,7 @@ function HomeSData() {
 
     const feed = JSON.parse(localStorage.getItem("search"));
 
+    console.log(feed)
 
     return (
         <div className='bg-gray-500 w-screen h-screen'>

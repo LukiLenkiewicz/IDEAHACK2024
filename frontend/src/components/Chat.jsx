@@ -62,8 +62,9 @@ function Tmp() {
       });
 
       const data = await response.json();
+      console.log(response)
+      if (response.ok && response.status !== 201) {
 
-      if (response.ok) {
         // Add ChatGPT's response to the messages
         setMessages([
           ...chatMessages,
@@ -73,6 +74,7 @@ function Tmp() {
           }
         ]);
       } else if (response.status === 201) {
+        console.log("HEjooo")
         navigate('/')
       }
       else {

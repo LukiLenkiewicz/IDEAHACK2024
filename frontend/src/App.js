@@ -35,10 +35,7 @@ function App() {
           }
         ></Route>
 
-      {/* Navbar is displayed on all pages */}
-      {/* <Navbar /> */}
-      {/* <PrivateRoute> */}
-      {/* <Route path='/profil' element={<UserProfile/>} userEmail="johndoe@example.com" /> */}
+      {/* {/* <Route path='/profil' element={<UserProfile/>} userEmail="johndoe@example.com" /> */}
       
         <Route path="/userData" element={
             <PrivateRoute>
@@ -47,10 +44,7 @@ function App() {
               </Route>
 
         <Route path="/search" element={
-            // <PrivateRoute>
-              //  <Navbar />
               <SearchBar /> } ></Route>
-            {/* // </PrivateRoute>} > */}
         
         <Route path="/chat" element={<Chat />} />
         <Route path="/userchat" element={<UserChat />} />
