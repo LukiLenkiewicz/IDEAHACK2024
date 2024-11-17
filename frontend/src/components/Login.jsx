@@ -7,7 +7,7 @@ import Select from 'react-tailwindcss-select'
 
 export default function Login() {
 
-    const { setUser } = useAuth();
+    const { handleUserChange } = useAuth();
     const emailRef = useRef();
     const passwordRef = useRef();
     const [userType, setUserType] = useState(null);
@@ -17,9 +17,9 @@ export default function Login() {
     const navigate = useNavigate();
 
     const types = [
-        { value: "User", label: "User" },
-        { value: "Company", label: "Company" },
-        { value: "Investor", label: "Investor" },
+        { value: "user", label: "User" },
+        { value: "company", label: "Company" },
+        { value: "investor", label: "Investor" },
       ];
 
     const handleUserTypeChange = (value) => {
@@ -32,7 +32,7 @@ export default function Login() {
         const credentials = {
             email: emailRef.current.value,
             password: passwordRef.current.value,
-            type: userType.value,
+            user_type: userType.value,
         };
 
         try {
@@ -44,10 +44,10 @@ export default function Login() {
                     'Content-Type': 'application/json',
                 }
             });
-
-            if (response.status === 200) {
+            console.log(response)
+            if (response.status == 200) {
                 const {email: userEmail, type: userType } = response.data;
-                setUser({email: userEmail, type: userType});
+                handleUserChange({email: userEmail, type: userType})
                 localStorage.setItem("authUser", JSON.stringify({email: userEmail, type: userType}));
                 navigate('/');
             }

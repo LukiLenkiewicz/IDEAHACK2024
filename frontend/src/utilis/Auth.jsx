@@ -7,6 +7,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   // Function to handle logout
+
+  const handleUserChange = (value) => {
+    setUser(value);
+  };
+
+
   const logout = async () => {
     try {
       await axios.delete("http://127.0.0.1:8000/api/auth/", {
@@ -31,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, logout, loading }}>
+    <AuthContext.Provider value={{ user, handleUserChange, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -8,19 +8,30 @@ import UpdateUserForm from './components/userSettings';
 import Chat from './components/Chat';
 import UserProfile from './pages/UserProfile';
 import { AuthProvider } from './utilis/Auth';
+import PrivateRoute from './utilis/PrivateRoute'
 
 function App() {
   return (
     <Router>
       <AuthProvider>
+      <Routes>
+
+      <Route path="/" element={
+          <PrivateRoute>
+             <Navbar />
+             <HomeS />
+          </PrivateRoute>
+          }
+        ></Route>
       {/* Navbar is displayed on all pages */}
       {/* <Navbar /> */}
       {/* <PrivateRoute> */}
       {/* <Route path='/profil' element={<UserProfile/>} userEmail="johndoe@example.com" /> */}
       
-      <Routes>
-        <Route path="/" element={<HomeS />} />
-        <Route path="/userData" element={<UpdateUserForm />} />
+        <Route path="/userData" element={
+            <PrivateRoute>
+              <UpdateUserForm />
+              </PrivateRoute>} />
         <Route path="/chat" element={<Chat />} />
 
         <Route path='/login' element={<Login/>} />
