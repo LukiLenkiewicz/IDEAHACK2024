@@ -25,6 +25,7 @@ from ideahack.virtual_sibling.interact import VirtualSibling
 from ideahack.profile_store import ProfileStoreHandler
 from ideahack.nls.vector_store import VectorStoreHandler
 from ideahack.nls.search_engine import HybridSearchSystem, BasicFeedSystem
+from ideahack.project.generator import PitchDeckGenerator
 
 
 from openai import OpenAI
@@ -324,7 +325,7 @@ class Feed(APIView):
         results = search_system.hybrid_search(search_query)
 
         return Response(
-            {"message": "ok", "feed": results, "id": id},
+            {"message": "ok", "feed": results},
             status=status.HTTP_200_OK,
         )
 
@@ -375,6 +376,21 @@ class CreateProject(APIView):
         content_type = ContentType.objects.get_for_model(owner)
 
         try:
+            project_info = {
+                "name": data.get("name"),
+                "bio": data.get("bio"),
+                "area_of_research": data.get("area_of_research", ""),
+                "cost_structure": data.get("cost_structure", 0),
+            }
+
+            generator = PitchDeckGenerator(BASE_DIR / "g_slides.json")
+            pitch_id, pitch_deck_dict = generator.generate_and_create_pitch_deck(
+                project_info, "PitchDeck"
+            )
+
+            presentation_link = generator.generate_presentation_link(pitch_id)
+            print(f"View the presentation here: {presentation_link}")
+
             project = Project.objects.create(
                 name=data.get("name"),
                 bio=data.get("bio"),
@@ -383,7 +399,7 @@ class CreateProject(APIView):
                 content_type=content_type,
                 requirements=data.get("requirements"),
                 email=data.get("email"),
-                pitch_deck=data.get("pitch_deck", ""),
+                pitch_deck=presentation_link,
                 area_of_research=data.get("area_of_research", ""),
                 cost_structure=data.get("cost_structure", 0),
                 keywords=data.get("keywords", ""),
@@ -467,7 +483,6 @@ class CompanyDetailView(APIView):
             return Response(serializer.data)
 
 
-# View for Project model
 class ProjectDetailView(APIView):
     def get(self, request, id=None):
         if id:
@@ -483,7 +498,6 @@ class ProjectDetailView(APIView):
             return Response(serializer.data)
 
 
-# View for Investor model
 class InvestorDetailView(APIView):
     def get(self, request, id):
         if id:

@@ -312,12 +312,12 @@ def create_projects(num=5):
             content_type=owner_type,
             requirements=fake.text(),
             email=fake.email(),
-            pitch_deck=fake.text(),
+            pitch_deck=fake.url(),
             area_of_research=fake.text(),
             cost_structure=random.randint(1000, 10000),
             keywords=fake.text(),
         )
-        
+
         project_profile_data = {
             "name": project.name,
             "bio": project.bio,
