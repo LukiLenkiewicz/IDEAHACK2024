@@ -319,7 +319,7 @@ class BasicFeedSystem:
             {profile['keywords']}
             """.strip()
         return profile_info
-
+    
     def search_similar_profiles(self, profile_type, profile_id):
         profile = self.get_profile(profile_type, profile_id)
         if not profile:
@@ -346,13 +346,14 @@ class BasicFeedSystem:
             target_vector_ids = self.get_vector_ids_by_profile_type(target_type)
             if not target_vector_ids:
                 continue
-
+            if target_type == profile_type:
+                target_vector_ids.remove(profile["vector_id"])
+            
             # Perform vector similarity search
             result_ids = self.vector_store_handler.search_vectors(
                 profile_embedding, target_vector_ids, top_k=20
             )
-            similar_profiles[target_type] = [
-                self.get_profile(target_type, res["id"]) for res in result_ids
-            ]
+
+            similar_profiles[target_type] = [self.profile_store_handler.get_profile_by_vector_id(res["id"])[1] for res in result_ids]
 
         return similar_profiles
