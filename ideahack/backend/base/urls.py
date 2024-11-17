@@ -13,5 +13,5 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("chat/<str:user_type>/<int:id>/", ChatView.as_view(), name="chat-view"),
     path("chatgpt/", ChatGPTView.as_view(), name="chatgpt"),
-    path("feed/<str:user_type>/<str:id>/", Feed.as_view(), name="feed-post"),
+    path("feed/", Feed.as_view(), name="feed-post"),
 ]

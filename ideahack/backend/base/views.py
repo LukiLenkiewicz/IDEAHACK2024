@@ -104,6 +104,52 @@ class SignUpView(APIView):
         if serializer.is_valid():
             user_instance = serializer.save()
 
+            if user_type == "User":
+                sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+                vector_store_handler = VectorStoreHandler(
+                    vector_store_file="vector_store.index"
+                )
+
+                profile_store_handler = ProfileStoreHandler(
+                    sentence_model=sentence_model,
+                    metadata_db_file=BASE_DIR / "db.sqlite3",
+                )
+                user_profile_data = {
+                    "name": "",
+                    "surname": "",
+                    "email": email,
+                    "bio": "",
+                    "experience": "",
+                    "skills": "",
+                    "link": "",
+                    "type": "",
+                }
+
+                profile_store_handler.add_user_profile(
+                    user_profile_data, vector_store_handler
+                )
+            if user_type == "Company":
+                sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+                vector_store_handler = VectorStoreHandler(
+                    vector_store_file="vector_store.index"
+                )
+
+                profile_store_handler = ProfileStoreHandler(
+                    sentence_model=sentence_model,
+                    metadata_db_file=BASE_DIR / "db.sqlite3",
+                )
+                company_profile_data = {
+                    "name": "",
+                    "email": email,
+                    "bio": "",
+                    "services": "",
+                    "link": "",
+                    "location": "",
+                }
+                profile_store_handler.add_company_profile(
+                    company_profile_data, vector_store_handler
+                )
+
             return Response(
                 {
                     "email": user_instance.email,
@@ -309,7 +355,7 @@ class ChatGPTView(APIView):
 
 
 class Feed(APIView):
-    def post(self, request, user_type, id):
+    def post(self, request):
         search_query = request.data.get("search_query")
 
         sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -319,33 +365,7 @@ class Feed(APIView):
         )
 
         profile_store_handler = ProfileStoreHandler(
-            sentence_model=sentence_model, metadata_db_file="metadata.db"
-        )
-
-        user_profile_data = {
-            "name": "John",
-            "surname": "Doe",
-            "email": "johndoe@example.com",
-            "bio": "Experienced data scientist with a focus on machine learning and AI.",
-            "experience": "5 years working in AI and machine learning projects.",
-            "skills": ["Python", "Machine Learning", "Deep Learning"],
-            "link": "https://johndoe.com",
-            "type": "Developer",
-        }
-
-        profile_store_handler.add_user_profile(user_profile_data, vector_store_handler)
-
-        company_profile_data = {
-            "name": "Tech Innovators Inc.",
-            "email": "contact@techinnovators.com",
-            "bio": "Leading company in AI and Machine Learning solutions and software development.",
-            "services": ["AI Development", "Software Consulting"],
-            "link": "https://techinnovators.com",
-            "location": "San Francisco, CA",
-        }
-
-        profile_store_handler.add_company_profile(
-            company_profile_data, vector_store_handler
+            sentence_model=sentence_model, metadata_db_file=BASE_DIR / "db.sqlite3"
         )
 
         search_system = HybridSearchSystem(
@@ -358,6 +378,9 @@ class Feed(APIView):
         results = search_system.hybrid_search(search_query)
 
         return Response(
-            {"message": "ok", "feed": JsonResponse(results, safe=False)},
+            {"message": "ok", "feed": results},
             status=status.HTTP_200_OK,
         )
+
+
+# JsonResponse(results, safe=False)

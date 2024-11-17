@@ -2,20 +2,33 @@ import os
 import django
 import random
 from faker import Faker
+from sentence_transformers import SentenceTransformer
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ideahack.backend.backend.settings")
 django.setup()
 from ideahack.backend.base.models import User, Project, Company, Investor, Position
+from ideahack.profile_store import ProfileStoreHandler
+from ideahack.nls.vector_store import VectorStoreHandler
+from ideahack.nls.search_engine import HybridSearchSystem
+from ideahack.backend.backend.settings import BASE_DIR
+
 from django.contrib.contenttypes.models import ContentType
+
 
 # Set up Django
 
 
 # Initialize Faker instance for generating random data
 fake = Faker()
+sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+vector_store_handler = VectorStoreHandler(vector_store_file="vector_store.index")
+
+profile_store_handler = ProfileStoreHandler(
+    sentence_model=sentence_model, metadata_db_file=BASE_DIR / "db.sqlite3"
+)
 
 
-# Generate some users
+# Ensure skills is a list
 def create_users(num=10):
     for _ in range(num):
         user = User.objects.create(
@@ -25,11 +38,24 @@ def create_users(num=10):
             password=fake.password(),
             bio=fake.text(),
             experience=fake.text(),
-            skills=fake.text(),
+            skills=fake.words(),
             link=fake.url(),
-            type=random.choice(["User", "Admin", "Guest"]),
+            type=random.choice(["Researcher", "Developer", "Engineer", "Doctor"]),
             keywords=fake.text(),
         )
+        user_profile_data = {
+            "name": user.name,
+            "surname": user.surname,
+            "email": user.email,
+            "bio": user.bio,
+            "experience": user.experience,
+            "skills": user.skills,
+            "link": user.link,
+            "type": user.type,
+        }
+
+        # If skills is a list of words, you can join them like this
+        profile_store_handler.add_user_profile(user_profile_data, vector_store_handler)
         print(f"Created user: {user.name} {user.surname}")
 
 
@@ -45,6 +71,17 @@ def create_companies(num=5):
             location=fake.address(),
             keywords=fake.text(),
             services=fake.text(),
+        )
+        company_profile_data = {
+            "name": company.name,
+            "email": company.email,
+            "bio": company.bio,
+            "services": company.services,
+            "link": company.link,
+            "location": company.location,
+        }
+        profile_store_handler.add_company_profile(
+            company_profile_data, vector_store_handler
         )
         print(f"Created company: {company.name}")
 

@@ -10,6 +10,8 @@ class User(models.Model):
     password = models.TextField()
     id = models.IntegerField(primary_key=True)
 
+    vector_id = models.IntegerField(null=True)
+
     bio = models.TextField(blank=True)
     experience = models.TextField(blank=True)
     skills = models.TextField(blank=True)
@@ -69,6 +71,8 @@ class Company(models.Model):
     password = models.TextField()
 
     id = models.IntegerField(primary_key=True)
+
+    vector_id = models.IntegerField(null=True)
 
     bio = models.TextField(blank=True)
 

@@ -86,16 +86,19 @@ class HybridSearchSystem:
                 "skills": filters.get("TECHNOLOGY", []),
                 "type": filters.get("ROLE", []) + filters.get("INDUSTRY", []),
             }
+            print(user_related_filters)
 
             # select vector_id of users if any value in user_related_filters matches with the value in db in the respective field (key in user_related_filters)
             for field, values in user_related_filters.items():
                 for value in values:
                     self.profile_store_handler.cursor.execute(
-                        f"SELECT vector_id FROM User WHERE {field} LIKE ?",
+                        f"SELECT vector_id FROM base_user WHERE {field} LIKE ?",
                         (f"%{value}%",),
                     )
                     rows = self.profile_store_handler.cursor.fetchall()
                     filtered_ids.extend([row[0] for row in rows])
+                    for row in rows:
+                        print(row)
 
         if "COMPANY" in profile_types:
             # Filter company profiles
@@ -111,7 +114,7 @@ class HybridSearchSystem:
             for field, values in company_related_filters.items():
                 for value in values:
                     self.profile_store_handler.cursor.execute(
-                        f"SELECT vector_id FROM Company WHERE {field} LIKE ?",
+                        f"SELECT vector_id FROM base_company WHERE {field} LIKE ?",
                         (f"%{value}%",),
                     )
                     rows = self.profile_store_handler.cursor.fetchall()
