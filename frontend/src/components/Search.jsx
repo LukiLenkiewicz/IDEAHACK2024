@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { BiSearch } from 'react-icons/bi'; // Make sure to import any required icons
 import Select from 'react-tailwindcss-select';
 import axios from 'axios'; // Import Axios for API calls
+import { Link, useNavigate } from 'react-router-dom';
+import Row from './Row';
 
 function MyComponent() {
   const [profileType, setProfileType] = useState('');
@@ -10,7 +12,10 @@ function MyComponent() {
   const [role, setRole] = useState('');
   const [experience, setExperience] = useState('');
   const [words, setWords] = useState('');
-  const [results, setResults] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [results, setResults] = useState({ projects: [], companies: [], users: [] }); // Initialize as an empty structure
+  const navigate = useNavigate();
 
   const data = {
     PROFILE_TYPES: [
@@ -72,21 +77,27 @@ function MyComponent() {
     if (event.key === 'Enter') {
       event.preventDefault(); // Prevent form submission on Enter key
       handleFilter(event);
-      console.log(event.target.value)
+      console.log(event.target.value);
 
       try {
-       const response = await axios.get('http://localhost:8000/api/feed/', {
-        params: {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8000/api/feed/', {
+          params: {
             search_query: event.target.value,
-        }
+          },
         });
-        console.log(response.data.feed)
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    }
+
+        localStorage.setItem("search", JSON.stringify(response.data.feed));
+        navigate('/data_search')
+
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+        setError("Error fetching search results");
+      } finally {
+        setLoading(false);
+      }
     }
   };
-  
 
   return (
     <div className="h-screen bg-gray-500 flex items-center justify-center pt-6">
@@ -165,7 +176,6 @@ function MyComponent() {
               </form>
             </div>
           </div>
-
         </div>
       </div>
     </div>

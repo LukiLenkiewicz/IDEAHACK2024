@@ -4,7 +4,7 @@ import { FaBook } from 'react-icons/fa'; // Example icon library import
 
 export default function BookSlicer({ name, id, desc }) {
   const navigate = useNavigate();
-
+  
   function handleClick(e) {
     console.log(e)
     e.preventDefault();
@@ -16,8 +16,10 @@ export default function BookSlicer({ name, id, desc }) {
         navigate(`/user/${id}`);
     }
 
+
     // window.location.reload(); // Optional: Only if you need a complete reload
   }
+
 
   return (
     <div className="w-[160px] max-[640px]:h-60 sm:h-64 md:h-72 lg:h-96 sm:w-[200px] md:w-[240px] lg:w-[280px] inline-block cursor-pointer relative p-2">
