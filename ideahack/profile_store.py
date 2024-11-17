@@ -158,6 +158,14 @@ class ProfileStoreHandler:
                     "bio",
                 ],
             ),
+            (
+                "base_project",
+                [
+                    "id",
+                    "name",
+                    "bio",
+                ],
+            ),
         ]:
             row_id += 1
             self.cursor.execute(
@@ -165,8 +173,9 @@ class ProfileStoreHandler:
             )
             row = self.cursor.fetchone()
             if row:
-                return {field: row[idx] for idx, field in enumerate(fields)} | {
+                profile_type = "USER" if table == "base_user" else "COMPANY" if table == "base_company" else "PROJECT"
+                return (profile_type, {field: row[idx] for idx, field in enumerate(fields)} | {
                     "rowID": row_id
-                }
+                })
 
         return None
