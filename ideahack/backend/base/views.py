@@ -18,7 +18,7 @@ from ideahack.backend.backend.settings import BASE_DIR
 from ideahack.virtual_sibling.interact import VirtualSibling
 from ideahack.profile_store import ProfileStoreHandler
 from ideahack.nls.vector_store import VectorStoreHandler
-from ideahack.nls.search_engine import HybridSearchSystem
+from ideahack.nls.search_engine import HybridSearchSystem, BasicFeedSystem
 
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -157,6 +157,7 @@ class SignUpView(APIView):
                     "email": user_instance.email,
                     "type": user_type,
                     "status": "success",
+                    "id": id,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -200,6 +201,7 @@ class LoginView(APIView):
                     "email": user_instance.email,
                     "type": user_type,
                     "status": "success",
+                    "id": id,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -230,7 +232,7 @@ class ChatView(APIView):
             answer = virtual_sibling.query(user_query=user_query)
             print(answer)
             return Response(
-                {"message": "ok", "answer": answer},
+                {"message": "ok", "answer": answer, "id": id},
                 status=status.HTTP_200_OK,
             )
         except ValueError as e:  # Handle missing profile or invalid ID
@@ -278,16 +280,12 @@ class ChatGPTView(APIView):
                 form.save()
 
             return Response(
-                {
-                    "message": chat_message,
-                },
+                {"message": chat_message, "id": id},
                 status=status.HTTP_200_OK,
             )
 
         return Response(
-            {
-                "message": chat_message,
-            },
+            {"message": chat_message, "id": id},
             status=status.HTTP_200_OK,
         )
 
@@ -318,7 +316,7 @@ class Feed(APIView):
         results = search_system.hybrid_search(search_query)
 
         return Response(
-            {"message": "ok", "feed": results},
+            {"message": "ok", "feed": results, "id": id},
             status=status.HTTP_200_OK,
         )
 
@@ -402,3 +400,29 @@ class CreateProject(APIView):
                 {"error": f"Failed to create project: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+class MainPage(APIView):
+    def get(self, request, user_type, id):
+        sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+        vector_store_handler = VectorStoreHandler(
+            vector_store_file="vector_store.index"
+        )
+
+        profile_store_handler = ProfileStoreHandler(
+            sentence_model=sentence_model, metadata_db_file=BASE_DIR / "db.sqlite3"
+        )
+
+        search_system = BasicFeedSystem(
+            vector_store_handler=vector_store_handler,
+            profile_store_handler=profile_store_handler,
+            sentence_model=sentence_model,
+        )
+
+        results = search_system.search_similar_profiles(user_type, id)
+
+        return Response(
+            {"message": "ok", "feed": results, "id": id},
+            status=status.HTTP_200_OK,
+        )

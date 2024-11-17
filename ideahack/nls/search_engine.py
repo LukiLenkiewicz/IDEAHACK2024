@@ -72,7 +72,7 @@ class HybridSearchSystem:
     def filter_profiles(self, filters, profile_types):
         filtered_ids = []
 
-        if "USER" in profile_types:
+        if "user" in profile_types:
             # Filter user profiles
             user_related_filters = {  # key - field in db, value - filter values
                 "bio": filters.get("TECHNOLOGY", [])
@@ -84,8 +84,7 @@ class HybridSearchSystem:
                 + filters.get("ROLE", [])
                 + filters.get("EXPERIENCE", []),
                 "skills": filters.get("TECHNOLOGY", []),
-                "type": filters.get("ROLE", []) 
-                + filters.get("INDUSTRY", []),
+                "type": filters.get("ROLE", []) + filters.get("INDUSTRY", []),
                 "keywords": filters.get("TECHNOLOGY", [])
                 + filters.get("INDUSTRY", [])
                 + filters.get("ROLE", [])
@@ -102,16 +101,15 @@ class HybridSearchSystem:
                     rows = self.profile_store_handler.cursor.fetchall()
                     filtered_ids.extend([row[0] for row in rows])
 
-        if "COMPANY" in profile_types:
+        if "company" in profile_types:
             # Filter company profiles
             company_related_filters = {  # key - field in db, value - filter values
                 "bio": filters.get("TECHNOLOGY", [])
                 + filters.get("INDUSTRY", [])
                 + filters.get("ROLE", [])
                 + filters.get("EXPERIENCE", []),
-                "services": filters.get("TECHNOLOGY", []) 
-                + filters.get("INDUSTRY", []),
-                "keywords":filters.get("TECHNOLOGY", [])
+                "services": filters.get("TECHNOLOGY", []) + filters.get("INDUSTRY", []),
+                "keywords": filters.get("TECHNOLOGY", [])
                 + filters.get("INDUSTRY", [])
                 + filters.get("ROLE", [])
                 + filters.get("EXPERIENCE", []),
@@ -126,8 +124,8 @@ class HybridSearchSystem:
                     )
                     rows = self.profile_store_handler.cursor.fetchall()
                     filtered_ids.extend([row[0] for row in rows])
-                    
-        if "PROJECT" in profile_types:
+
+        if "project" in profile_types:
             # Filter project profiles
             project_related_filters = {  # key - field in db, value - filter values
                 "bio": filters.get("TECHNOLOGY", [])
@@ -143,7 +141,7 @@ class HybridSearchSystem:
                 "keywords": filters.get("TECHNOLOGY", [])
                 + filters.get("INDUSTRY", [])
                 + filters.get("ROLE", [])
-                + filters.get("EXPERIENCE", []),   
+                + filters.get("EXPERIENCE", []),
             }
 
             # select vector_id of projects if any value in project_related_filters matches with the value in db in the respective field (key in project_related_filters)
@@ -173,25 +171,31 @@ class HybridSearchSystem:
             query_embedding, filtered_ids, top_k=5
         )
 
-        result_profiles = {
-            "USER": [],
-            "COMPANY": [],
-            "PROJECT": []
-        }
+        result_profiles = {"user": [], "company": [], "project": []}
         for res in result_ids:
-            profile_type, profile = self.profile_store_handler.get_profile_by_vector_id(res["id"])
+            profile_type, profile = self.profile_store_handler.get_profile_by_vector_id(
+                res["id"]
+            )
             result_profiles[profile_type].append(profile)
 
         return result_profiles
-    
+
+
 class BasicFeedSystem:
-    def __init__(self, profile_store_handler: ProfileStoreHandler, vector_store_handler: VectorStoreHandler, sentence_model: SentenceTransformer):
+    def __init__(
+        self,
+        profile_store_handler: ProfileStoreHandler,
+        vector_store_handler: VectorStoreHandler,
+        sentence_model: SentenceTransformer,
+    ):
         self.profile_store_handler = profile_store_handler
         self.vector_store_handler = vector_store_handler
         self.sentence_model = sentence_model
 
     def get_user_profile(self, profile_id):
-        self.profile_store_handler.cursor.execute("SELECT * FROM base_user WHERE id = ?", (profile_id,))
+        self.profile_store_handler.cursor.execute(
+            "SELECT * FROM base_user WHERE id = ?", (profile_id,)
+        )
         row = self.profile_store_handler.cursor.fetchone()
         if row:
             return {
@@ -200,12 +204,16 @@ class BasicFeedSystem:
                 "bio": row[6],
                 "experience": row[7],
                 "skills": row[8],
-                "vector_id": row[5]
+                "vector_id": row[5],
+                "type": row[10],
+                "keywords": row[11],
             }
         return None
 
     def get_company_profile(self, profile_id):
-        self.profile_store_handler.cursor.execute("SELECT * FROM base_company WHERE id = ?", (profile_id,))
+        self.profile_store_handler.cursor.execute(
+            "SELECT * FROM base_company WHERE id = ?", (profile_id,)
+        )
         row = self.profile_store_handler.cursor.fetchone()
         if row:
             return {
@@ -213,12 +221,14 @@ class BasicFeedSystem:
                 "name": row[1],
                 "bio": row[5],
                 "services": row[8],
-                "vector_id": row[4]
+                "vector_id": row[4],
             }
         return None
 
     def get_investor_profile(self, profile_id):
-        self.profile_store_handler.cursor.execute("SELECT * FROM base_investor WHERE id = ?", (profile_id,))
+        self.profile_store_handler.cursor.execute(
+            "SELECT * FROM base_investor WHERE id = ?", (profile_id,)
+        )
         row = self.profile_store_handler.cursor.fetchone()
         if row:
             return {
@@ -227,12 +237,14 @@ class BasicFeedSystem:
                 "bio": row[4],
                 "portfolio": row[5],
                 "interests": row[6],
-                "vector_id": None  # Assuming investors don't have vector_id in the database
+                "vector_id": None,  # Assuming investors don't have vector_id in the database
             }
         return None
 
     def get_project_profile(self, profile_id):
-        self.profile_store_handler.cursor.execute("SELECT * FROM base_project WHERE id = ?", (profile_id,))
+        self.profile_store_handler.cursor.execute(
+            "SELECT * FROM base_project WHERE id = ?", (profile_id,)
+        )
         row = self.profile_store_handler.cursor.fetchone()
         if row:
             return {
@@ -241,17 +253,23 @@ class BasicFeedSystem:
                 "bio": row[2],
                 "requirements": row[7],
                 "area_of_research": row[9],
-                "vector_id": row[10]
+                "vector_id": row[10],
             }
         return None
 
     def get_vector_ids_by_profile_type(self, profile_type):
-        if profile_type == "USER":
-            self.profile_store_handler.cursor.execute("SELECT vector_id FROM base_user WHERE vector_id IS NOT NULL")
-        elif profile_type == "COMPANY":
-            self.profile_store_handler.cursor.execute("SELECT vector_id FROM base_company WHERE vector_id IS NOT NULL")
-        elif profile_type == "PROJECT":
-            self.profile_store_handler.cursor.execute("SELECT vector_id FROM base_project WHERE vector_id IS NOT NULL")
+        if profile_type == "user":
+            self.profile_store_handler.cursor.execute(
+                "SELECT vector_id FROM base_user WHERE vector_id IS NOT NULL"
+            )
+        elif profile_type == "company":
+            self.profile_store_handler.cursor.execute(
+                "SELECT vector_id FROM base_company WHERE vector_id IS NOT NULL"
+            )
+        elif profile_type == "project":
+            self.profile_store_handler.cursor.execute(
+                "SELECT vector_id FROM base_project WHERE vector_id IS NOT NULL"
+            )
         else:
             return []
 
@@ -259,19 +277,19 @@ class BasicFeedSystem:
         return [row[0] for row in rows]
 
     def get_profile(self, profile_type, profile_id):
-        if profile_type == "USER":
+        if profile_type == "user":
             return self.get_user_profile(profile_id)
-        elif profile_type == "COMPANY":
+        elif profile_type == "company":
             return self.get_company_profile(profile_id)
-        elif profile_type == "INVESTOR":
+        elif profile_type == "investor":
             return self.get_investor_profile(profile_id)
-        elif profile_type == "PROJECT":
+        elif profile_type == "project":
             return self.get_project_profile(profile_id)
         else:
             return None
-        
+
     def get_profile_info(self, profile_type, profile):
-        if profile_type == "USER":
+        if profile_type == "user":
             profile_info = f"""
             {profile['bio']}
             {profile['experience']}
@@ -279,13 +297,13 @@ class BasicFeedSystem:
             {profile['type']}
             {profile['keywords']}
             """.strip()
-        elif profile_type == "COMPANY":
+        elif profile_type == "company":
             profile_info = f"""
             {profile['bio']}
             {profile['services']}
             {profile['keywords']}
             """.strip()
-        elif profile_type == "INVESTOR":
+        elif profile_type == "investor":
             profile_info = f"""
             {profile['bio']}
             {profile['portfolio']}
@@ -293,7 +311,7 @@ class BasicFeedSystem:
             {profile['keywords']}
             {profile['preferences']}
             """.strip()
-        elif profile_type == "PROJECT":
+        elif profile_type == "project":
             profile_info = f"""
             {profile['bio']}
             {profile['requirements']}
@@ -309,16 +327,18 @@ class BasicFeedSystem:
 
         # Generate embedding for the profile description
         profile_info = self.get_profile_info(profile_type, profile)
-        profile_embedding = self.sentence_model.encode(profile_info, convert_to_tensor=False)
+        profile_embedding = self.sentence_model.encode(
+            profile_info, convert_to_tensor=False
+        )
 
         # Determine which profile types to search for
         target_profile_types = []
-        if profile_type == "USER":
-            target_profile_types = ["USER", "PROJECT", "COMPANY"]
-        elif profile_type == "COMPANY":
-            target_profile_types = ["USER", "PROJECT"]
-        elif profile_type == "INVESTOR":
-            target_profile_types = ["PROJECT", "COMPANY"]
+        if profile_type == "user":
+            target_profile_types = ["user", "project", "company"]
+        elif profile_type == "company":
+            target_profile_types = ["user", "project"]
+        elif profile_type == "investor":
+            target_profile_types = ["project", "company"]
 
         # Retrieve potential matches from the vector store
         similar_profiles = {}
@@ -328,7 +348,11 @@ class BasicFeedSystem:
                 continue
 
             # Perform vector similarity search
-            result_ids = self.vector_store_handler.search_vectors(profile_embedding, target_vector_ids, top_k=20)
-            similar_profiles[target_type] = [self.get_profile(target_type, res["id"]) for res in result_ids]
+            result_ids = self.vector_store_handler.search_vectors(
+                profile_embedding, target_vector_ids, top_k=20
+            )
+            similar_profiles[target_type] = [
+                self.get_profile(target_type, res["id"]) for res in result_ids
+            ]
 
         return similar_profiles
