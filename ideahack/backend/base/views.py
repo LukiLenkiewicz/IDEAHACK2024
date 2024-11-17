@@ -108,8 +108,6 @@ class SignUpView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        request.data.pop("user_type", None)
-
         serializer = serializer_class(data=request.data)
         if serializer.is_valid():
             user_instance = serializer.save()
