@@ -53,7 +53,7 @@ function Tmp() {
       };
 
       
-      const response = await fetch('http://localhost:8000/api/chatgpt/', {
+      const response = await fetch('http://35.157.234.63:8000/api/chatgpt/', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

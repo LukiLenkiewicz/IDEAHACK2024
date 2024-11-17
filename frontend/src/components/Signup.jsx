@@ -17,9 +17,9 @@ export default function Signup() {
   const [loadingtype, setLoading] = useState(false);
 
   const types = [
-    { value: "User", label: "User" },
-    { value: "Company", label: "Company" },
-    { value: "Investor", label: "Investor" },
+    { value: "user", label: "User" },
+    { value: "company", label: "Company" },
+    { value: "investor", label: "Investor" },
   ];
 
   const handleUserTypeChange = (value) => {
@@ -46,7 +46,7 @@ export default function Signup() {
 
     try {
 
-      const response = await axios.post("http://127.0.0.1:8000/api/signup/", payload, {
+      const response = await axios.post("http://35.157.234.63:8000/api/signup/", payload, {
         headers: {
           "Content-Type": "application/json",
         },

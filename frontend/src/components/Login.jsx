@@ -39,7 +39,7 @@ export default function Login() {
             setError("");
             setLoading(true);
 
-            const response = await axios.post('http://localhost:8000/api/login/', credentials, {
+            const response = await axios.post('http://35.157.234.63:8000/api/login/', credentials, {
                 headers: {
                     'Content-Type': 'application/json',
                 }

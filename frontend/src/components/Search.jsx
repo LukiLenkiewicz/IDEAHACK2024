@@ -81,7 +81,7 @@ function MyComponent() {
 
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8000/api/feed/', {
+        const response = await axios.get('http://35.157.234.63:8000/api/feed/', {
           params: {
             search_query: event.target.value,
           },

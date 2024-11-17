@@ -2,6 +2,7 @@ import ast
 
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
+from django.http import QueryDict
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -83,6 +84,9 @@ class SignUpView(APIView):
         password = request.data.get("password")
         user_type = request.data.get("user_type")
         id = str(uuid.uuid4())
+        print(email)
+        print(password)
+        print(user_type)
 
         request.data["id"] = id
 
@@ -91,7 +95,6 @@ class SignUpView(APIView):
                 {"error": "All fields are required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         try:
             model, serializer_class = map_user_type(user_type)
         except ValueError:
@@ -99,6 +102,7 @@ class SignUpView(APIView):
                 {"error": "Invalid user type"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        print("HERE")
 
         if any(
             m.objects.filter(email=email).exists() for m in [User, Company, Investor]
@@ -112,7 +116,7 @@ class SignUpView(APIView):
         if serializer.is_valid():
             user_instance = serializer.save()
 
-            if user_type == "User":
+            if user_type == "user":
                 sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
                 vector_store_handler = VectorStoreHandler(
                     vector_store_file="vector_store.index"
@@ -136,7 +140,7 @@ class SignUpView(APIView):
                 profile_store_handler.add_user_profile(
                     user_profile_data, vector_store_handler
                 )
-            if user_type == "Company":
+            if user_type == "company":
                 sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
                 vector_store_handler = VectorStoreHandler(
                     vector_store_file="vector_store.index"
@@ -172,9 +176,11 @@ class SignUpView(APIView):
 
 class LoginView(APIView):
     def post(self, request):
+        print(request.data)
         email = request.data.get("email")
         password = request.data.get("password")
         user_type = request.data.get("user_type")
+
 
         if not all([email, password, user_type]):
             return Response(
@@ -182,18 +188,17 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if user_type not in ["User", "Company", "Investor"]:
+        if user_type not in ["user", "company", "investor"]:
             return Response(
                 {"error": "Invalid user type"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         model_dict = {
-            "User": User,
-            "Company": Company,
-            "Investor": Investor,
+            "user": User,
+            "company": Company,
+            "investor": Investor,
         }
-
         user_model = model_dict[user_type]
 
         try:
@@ -257,7 +262,7 @@ class ChatView(APIView):
 
 class Settings(APIView):
     def post(self, request, user_type, id):
-        if user_type == "User":
+        if user_type == "user":
             try:
                 user = User.objects.get(id=id)
             except User.DoesNotExist:
@@ -283,7 +288,7 @@ class Settings(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        elif user_type == "Company":
+        elif user_type == "company":
             try:
                 company = Company.objects.get(id=id)
             except Company.DoesNotExist:
@@ -301,7 +306,7 @@ class Settings(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        elif user_type == "Investor":
+        elif user_type == "investor":
             try:
                 investor = Investor.objects.get(id=id)
             except Investor.DoesNotExist:
@@ -339,7 +344,6 @@ class ChatGPTView(APIView):
         )
         chat_message = response.choices[0].message.content
         messages.append({"role": "assistant", "content": chat_message})
-        print("hEJ")
         if message.lower() == "quit":
             messages.append(
                 {"role": "user", "content": "Display full filled form in .json format."}
@@ -348,14 +352,15 @@ class ChatGPTView(APIView):
                 model="gpt-4o-mini", messages=messages, response_format=FormUser
             )
             filled_form = response.choices[0].message.content
-            print(filled_form)
-            filled_form = ast.literal_eval(filled_form)
+            filled_form = filled_form.encode('utf-8')
+            
             user_instance = User.objects.get(
                 email=user_email
             )
+            print(filled_form)
+            filled_form = QueryDict(filled_form, mutable=True)
             form = UserForm(filled_form, instance=user_instance)
             if form.is_valid():
-                print("ELO")
                 form.save()
 
             return Response(

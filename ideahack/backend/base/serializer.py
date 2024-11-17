@@ -29,9 +29,9 @@ class InvestorSerializer(serializers.ModelSerializer):
 
 def map_user_type(user_type):
     mapping = {
-        "User": (User, UserSerializer),
-        "Company": (Company, CompanySerializer),
-        "Investor": (Investor, InvestorSerializer),
+        "user": (User, UserSerializer),
+        "company": (Company, CompanySerializer),
+        "investor": (Investor, InvestorSerializer),
     }
     if user_type not in mapping:
         raise ValueError("Invalid user type")

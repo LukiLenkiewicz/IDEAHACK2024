@@ -16,7 +16,7 @@ const Chat = ({ room }) => {
     const fetchMessages = async () => {
       try {
         const response = await axios.post(
-          `http://localhost:8000/api/chat/${feed.type}/${feed.id}`,
+          `http://35.157.234.63:8000/api/chat/${feed.type}/${feed.id}`,
           { query: "Fetch messages" } // Sending a generic query to comply with the backend structure
         );
         setMessages(response.data.messages || []);
@@ -42,7 +42,7 @@ const Chat = ({ room }) => {
 
       // Send the new message to the backend
       const response = await axios.post(
-        `http://localhost:8000/api/chat/`,
+        `http://35.157.234.63:8000/api/chat/`,
         {
           query: newMessage,
         }
