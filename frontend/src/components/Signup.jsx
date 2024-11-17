@@ -8,7 +8,7 @@ import { useAuth } from "../utilis/Auth";
 
 export default function Signup() {
 
-  const { setUser } = useAuth();
+  const { handleUserChange } = useAuth();
   const navigate = useNavigate();
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -41,7 +41,6 @@ export default function Signup() {
       user_type: userType.value,
     };
 
-    console.log(payload);  // Optional: To inspect the payload before sending
 
     setLoading(true);  // Start loading
 
@@ -52,12 +51,12 @@ export default function Signup() {
           "Content-Type": "application/json",
         },
       });
-    
+
+      console.log(response)
       if (response.status === 200) {
         console.log("Account created successfully!", response.data);
-    
         const {email: userEmail, type: userType } = response.data;
-        setUser({email: userEmail, type: userType });
+        handleUserChange({email: userEmail, type: userType})
         localStorage.setItem("authUser", JSON.stringify({email: userEmail, type: userType}));
         navigate('/');
         setError("");  // Clear any existing error messages
