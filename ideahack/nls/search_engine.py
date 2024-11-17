@@ -84,9 +84,13 @@ class HybridSearchSystem:
                 + filters.get("ROLE", [])
                 + filters.get("EXPERIENCE", []),
                 "skills": filters.get("TECHNOLOGY", []),
-                "type": filters.get("ROLE", []) + filters.get("INDUSTRY", []),
+                "type": filters.get("ROLE", []) 
+                + filters.get("INDUSTRY", []),
+                "keywords": filters.get("TECHNOLOGY", [])
+                + filters.get("INDUSTRY", [])
+                + filters.get("ROLE", [])
+                + filters.get("EXPERIENCE", []),
             }
-            print(user_related_filters)
 
             # select vector_id of users if any value in user_related_filters matches with the value in db in the respective field (key in user_related_filters)
             for field, values in user_related_filters.items():
@@ -97,8 +101,6 @@ class HybridSearchSystem:
                     )
                     rows = self.profile_store_handler.cursor.fetchall()
                     filtered_ids.extend([row[0] for row in rows])
-                    for row in rows:
-                        print(row)
 
         if "COMPANY" in profile_types:
             # Filter company profiles
@@ -107,7 +109,12 @@ class HybridSearchSystem:
                 + filters.get("INDUSTRY", [])
                 + filters.get("ROLE", [])
                 + filters.get("EXPERIENCE", []),
-                "services": filters.get("TECHNOLOGY", []) + filters.get("INDUSTRY", []),
+                "services": filters.get("TECHNOLOGY", []) 
+                + filters.get("INDUSTRY", []),
+                "keywords":filters.get("TECHNOLOGY", [])
+                + filters.get("INDUSTRY", [])
+                + filters.get("ROLE", [])
+                + filters.get("EXPERIENCE", []),
             }
 
             # select vector_id of companies if any value in company_related_filters matches with the value in db in the respective field (key in company_related_filters)
@@ -115,6 +122,35 @@ class HybridSearchSystem:
                 for value in values:
                     self.profile_store_handler.cursor.execute(
                         f"SELECT vector_id FROM base_company WHERE {field} LIKE ?",
+                        (f"%{value}%",),
+                    )
+                    rows = self.profile_store_handler.cursor.fetchall()
+                    filtered_ids.extend([row[0] for row in rows])
+                    
+        if "PROJECT" in profile_types:
+            # Filter project profiles
+            project_related_filters = {  # key - field in db, value - filter values
+                "bio": filters.get("TECHNOLOGY", [])
+                + filters.get("INDUSTRY", [])
+                + filters.get("ROLE", [])
+                + filters.get("EXPERIENCE", []),
+                "requirements": filters.get("TECHNOLOGY", [])
+                + filters.get("INDUSTRY", [])
+                + filters.get("ROLE", [])
+                + filters.get("EXPERIENCE", []),
+                "area_of_research": filters.get("INDUSTRY", [])
+                + filters.get("EXPERIENCE", []),
+                "keywords": filters.get("TECHNOLOGY", [])
+                + filters.get("INDUSTRY", [])
+                + filters.get("ROLE", [])
+                + filters.get("EXPERIENCE", []),   
+            }
+
+            # select vector_id of projects if any value in project_related_filters matches with the value in db in the respective field (key in project_related_filters)
+            for field, values in project_related_filters.items():
+                for value in values:
+                    self.profile_store_handler.cursor.execute(
+                        f"SELECT vector_id FROM base_project WHERE {field} LIKE ?",
                         (f"%{value}%",),
                     )
                     rows = self.profile_store_handler.cursor.fetchall()
@@ -137,10 +173,13 @@ class HybridSearchSystem:
             query_embedding, filtered_ids, top_k=5
         )
 
-        result_profiles = []
+        result_profiles = {
+            "USER": [],
+            "COMPANY": [],
+            "PROJECT": []
+        }
         for res in result_ids:
-            profile = self.profile_store_handler.get_profile_by_vector_id(res["id"])
-            result_profiles.append(profile)
-            print(profile)
+            profile_type, profile = self.profile_store_handler.get_profile_by_vector_id(res["id"])
+            result_profiles[profile_type].append(profile)
 
         return result_profiles

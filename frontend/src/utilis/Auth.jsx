@@ -1,10 +1,13 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   // Function to handle logout
 
@@ -15,13 +18,11 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.delete("http://127.0.0.1:8000/api/auth/", {
-        headers: {
-        },
-      });
-
       setUser(null);
       localStorage.removeItem("authUser");
+      navigate('/login');  // Redirect to home page after logout
+
+
     } catch (error) {
       console.error("Logout failed:", error);
       throw new Error("Logout failed");

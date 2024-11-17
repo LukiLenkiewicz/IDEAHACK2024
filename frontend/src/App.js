@@ -9,6 +9,7 @@ import Chat from './components/Chat';
 import UserProfile from './pages/UserProfile';
 import { AuthProvider } from './utilis/Auth';
 import PrivateRoute from './utilis/PrivateRoute'
+import SearchBar from './components/Search';
 
 function App() {
   return (
@@ -31,7 +32,16 @@ function App() {
         <Route path="/userData" element={
             <PrivateRoute>
               <UpdateUserForm />
-              </PrivateRoute>} />
+              </PrivateRoute>} >
+              </Route>
+
+        <Route path="/search" element={
+            <PrivateRoute>
+               <Navbar />
+              <SearchBar />
+            </PrivateRoute>} >
+            </Route>
+        
         <Route path="/chat" element={<Chat />} />
 
         <Route path='/login' element={<Login/>} />

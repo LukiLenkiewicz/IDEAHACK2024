@@ -5,7 +5,7 @@ import { useAuth } from "../utilis/Auth";
 
 function Navbar() {
   const [nav, setNav] = useState(false)
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
   const navigate = useNavigate();
   const [error, setError] = useState("")
 
@@ -17,8 +17,9 @@ function Navbar() {
   // Log out function
   const logUserOut = () => {
     try {
-      logout();  // Call the logout function from context
-      navigate('/');  // Redirect to home page after logout
+      logout();  
+      navigate('/login');  // Redirect to home page after logout
+      window.location.reload();
     } catch (err) {
       setError('Failed to log out');
     }
@@ -63,7 +64,7 @@ function Navbar() {
             <Link to={"/history"} className='text-[#00df6e] text-base'>History</Link>
           </li>
           <li className='p-4 border-b ml-4 hover:bg-slate-100 text-[#00df6e]'>
-            <Link to={"/"} onClick={logUserOut}>Logout</Link>
+            <Link to={"/login"} onClick={logUserOut}>Logout</Link>
           </li>
         </ul>
       </div>
