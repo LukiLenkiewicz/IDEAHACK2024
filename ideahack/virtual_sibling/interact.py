@@ -97,23 +97,26 @@ class VirtualSibling:
         )
 
         # Construct system prompt for language model
-        system_prompt = f"""Profile Information:
-        {profile_info}
-        
-        Instructions: Answer strictly based only on the above information. If insufficient, respond with, '{self.responses['info_not_found']}'."""
+        system_prompt = (
+            f"Profile Information:\n"
+            f"{profile_info}\n\n"
+            f"Instructions: Answer strictly based only on the above information. "
+            f"If insufficient, respond with, '{self.responses['info_not_found']}'."
+        )
 
         # Call OpenAI API (assuming API key is set)
         completion = self.llm_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": system_prompt},
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
                 {"role": "user", "content": user_query},
             ],
         )
 
         answer = completion.choices[0].message.content
-
-        answer = self.responses["info_not_found"]
 
         if self.responses["info_not_found"] in answer:
             # Scrape website for additional information
@@ -124,5 +127,6 @@ class VirtualSibling:
 
                 if answer.strip() == "NA":
                     answer = self.responses["info_not_found"]
-
+        print("jej")
+        print(completion.choices[0].message.content)
         return answer

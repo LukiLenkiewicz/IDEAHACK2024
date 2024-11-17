@@ -166,21 +166,24 @@ class LoginView(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
         user_type = request.data.get("user_type")
+
         if not all([email, password, user_type]):
             return Response(
                 {"error": "Email, password, and user type are required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if user_type not in ["user", "company", "investor"]:
+        if user_type not in ["User", "Company", "Investor"]:
             return Response(
                 {"error": "Invalid user type"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        user_model = {
-            "user": User,
-            "company": Company,
-            "investor": Investor,
-        }.get(user_type)
+        model_dict = {
+            "User": User,
+            "Company": Company,
+            "Investor": Investor,
+        }
+
+        user_model = model_dict[user_type]
 
         try:
             user_instance = user_model.objects.get(email=email)
@@ -208,37 +211,39 @@ class LoginView(APIView):
 
 class ChatView(APIView):
     def post(self, request, user_type, id):
-        # Log the incoming data for debugging
-        print(f"Received data: {request.data}")  # Debug line
+        print(f"Received data: {request.data}")  # Debugging
 
-        # Ensure `request.data` is not empty and contains the expected field
         user_query = request.data.get("query")
-
         if not user_query:
             return Response(
                 {"error": "Query parameter is missing."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        print(user_query)
 
-        virtual_sibling = VirtualSibling(
-            profile_id=id,
-            profile_type=user_type,
-            db_path=BASE_DIR / "db.sqlite3",
-        )
-
-        answer = virtual_sibling.query(user_query=user_query)
-
-        print(answer)
-        return Response(
-            {"message": "ok", "answer": answer},
-            status=status.HTTP_200_OK,
-        )
+        try:
+            virtual_sibling = VirtualSibling(
+                profile_id=id,
+                profile_type=user_type,
+                db_path=BASE_DIR / "db.sqlite3",
+            )
+            answer = virtual_sibling.query(user_query=user_query)
+            print(answer)
+            return Response(
+                {"message": "ok", "answer": answer},
+                status=status.HTTP_200_OK,
+            )
+        except ValueError as e:  # Handle missing profile or invalid ID
+            return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:  # Catch other unexpected errors
+            return Response(
+                {"error": f"Internal server error: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class Settings(APIView):
     def post(self, request, user_type, id):
-        if user_type == "user":
+        if user_type == "User":
             try:
                 user = User.objects.get(id=id)
             except User.DoesNotExist:
@@ -264,7 +269,7 @@ class Settings(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        elif user_type == "company":
+        elif user_type == "Company":
             try:
                 company = Company.objects.get(id=id)
             except Company.DoesNotExist:
@@ -282,7 +287,7 @@ class Settings(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        elif user_type == "investor":
+        elif user_type == "Investor":
             try:
                 investor = Investor.objects.get(id=id)
             except Investor.DoesNotExist:
