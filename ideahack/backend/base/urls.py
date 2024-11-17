@@ -7,6 +7,7 @@ from ideahack.backend.base.views import (
     ChatGPTView,
     Feed,
     CreateProject,
+    MainPage,
 )
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
         CreateProject.as_view(),
         name="create-project",
     ),
+    path("main/<str:user_type>/<int:id>/", MainPage.as_view(), name="main-page"),
 ]
