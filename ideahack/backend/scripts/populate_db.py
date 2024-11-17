@@ -317,6 +317,22 @@ def create_projects(num=5):
             cost_structure=random.randint(1000, 10000),
             keywords=fake.text(),
         )
+        
+        project_profile_data = {
+            "name": project.name,
+            "bio": project.bio,
+            "owner_type": project.owner_type,
+            "owner_id": project.owner_id,
+            "requirements": project.requirements,
+            "email": project.email,
+            "pitch_deck": project.pitch_deck,
+            "area_of_research": project.area_of_research,
+            "cost_structure": project.cost_structure,
+            "keywords": project.keywords,
+        }
+        profile_store_handler.add_project_profile(
+            project_profile_data, vector_store_handler
+        )
         print(f"Created project: {project.name}")
 
 

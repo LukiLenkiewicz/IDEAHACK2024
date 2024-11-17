@@ -53,6 +53,44 @@ class ProfileStoreHandler:
         else:
             self.conn = sqlite3.connect(metadata_db_file)
             self.cursor = self.conn.cursor()
+            
+    def add_project_profile(self, profile_data, vector_store_handler: VectorStoreHandler):
+        vector_data = f"""
+        {profile_data['bio']}
+        
+        {profile_data['requirements']}
+        
+        {profile_data['area_of_research']}
+        
+        {profile_data['keywords']}
+        """.strip()
+
+        # Create vector from profile bio
+        embedding = self.sentence_model.encode(vector_data, convert_to_tensor=False)
+        # Add vector to vector store and get vector_id
+        vector_id = vector_store_handler.add_vector(embedding)
+
+        # Insert profile data into project_profiles table
+        self.cursor.execute(
+            """
+            INSERT INTO base_project (name, bio, owner_type, owner_id, requirements, email, pitch_deck, area_of_research, cost_structure, keywords, vector_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                profile_data["name"],
+                profile_data["bio"],
+                profile_data["owner_type"],
+                profile_data["owner_id"],
+                profile_data["requirements"],
+                profile_data["email"],
+                profile_data["pitch_deck"],
+                profile_data["area_of_research"],
+                profile_data["cost_structure"],
+                profile_data["keywords"],
+                vector_id,
+            ),
+        )
+        self.conn.commit()
 
     def add_user_profile(self, profile_data, vector_store_handler: VectorStoreHandler):
         vector_data = f"""

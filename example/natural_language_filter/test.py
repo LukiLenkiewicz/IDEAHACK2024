@@ -2,7 +2,7 @@
 from sentence_transformers import SentenceTransformer
 from ideahack.profile_store import ProfileStoreHandler
 from ideahack.nls.vector_store import VectorStoreHandler
-from ideahack.nls.search_engine import HybridSearchSystem
+from ideahack.nls.search_engine import HybridSearchSystem, BasicFeedSystem
 
 # Initialize SentenceTransformer model
 sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -54,4 +54,7 @@ results = search_system.hybrid_search(search_query)
 for result in results:
     print(result)
 
-
+# Test feed system
+user_id = 1
+feed_system = BasicFeedSystem(profile_store_handler, vector_store_handler, sentence_model)
+similar_profiles = feed_system.search_similar_profiles("USER", user_id)

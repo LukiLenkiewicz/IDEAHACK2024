@@ -44,6 +44,7 @@ class Project(models.Model):
     area_of_research = models.TextField(blank=True)
     cost_structure = models.PositiveBigIntegerField(blank=True)
     keywords = models.TextField(blank=True)
+    vector_id = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name

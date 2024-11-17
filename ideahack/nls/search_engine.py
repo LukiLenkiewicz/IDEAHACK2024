@@ -183,3 +183,152 @@ class HybridSearchSystem:
             result_profiles[profile_type].append(profile)
 
         return result_profiles
+    
+class BasicFeedSystem:
+    def __init__(self, profile_store_handler: ProfileStoreHandler, vector_store_handler: VectorStoreHandler, sentence_model: SentenceTransformer):
+        self.profile_store_handler = profile_store_handler
+        self.vector_store_handler = vector_store_handler
+        self.sentence_model = sentence_model
+
+    def get_user_profile(self, profile_id):
+        self.profile_store_handler.cursor.execute("SELECT * FROM base_user WHERE id = ?", (profile_id,))
+        row = self.profile_store_handler.cursor.fetchone()
+        if row:
+            return {
+                "id": row[0],
+                "name": row[1],
+                "bio": row[6],
+                "experience": row[7],
+                "skills": row[8],
+                "vector_id": row[5]
+            }
+        return None
+
+    def get_company_profile(self, profile_id):
+        self.profile_store_handler.cursor.execute("SELECT * FROM base_company WHERE id = ?", (profile_id,))
+        row = self.profile_store_handler.cursor.fetchone()
+        if row:
+            return {
+                "id": row[0],
+                "name": row[1],
+                "bio": row[5],
+                "services": row[8],
+                "vector_id": row[4]
+            }
+        return None
+
+    def get_investor_profile(self, profile_id):
+        self.profile_store_handler.cursor.execute("SELECT * FROM base_investor WHERE id = ?", (profile_id,))
+        row = self.profile_store_handler.cursor.fetchone()
+        if row:
+            return {
+                "id": row[0],
+                "name": row[1],
+                "bio": row[4],
+                "portfolio": row[5],
+                "interests": row[6],
+                "vector_id": None  # Assuming investors don't have vector_id in the database
+            }
+        return None
+
+    def get_project_profile(self, profile_id):
+        self.profile_store_handler.cursor.execute("SELECT * FROM base_project WHERE id = ?", (profile_id,))
+        row = self.profile_store_handler.cursor.fetchone()
+        if row:
+            return {
+                "id": row[0],
+                "name": row[1],
+                "bio": row[2],
+                "requirements": row[7],
+                "area_of_research": row[9],
+                "vector_id": row[10]
+            }
+        return None
+
+    def get_vector_ids_by_profile_type(self, profile_type):
+        if profile_type == "USER":
+            self.profile_store_handler.cursor.execute("SELECT vector_id FROM base_user WHERE vector_id IS NOT NULL")
+        elif profile_type == "COMPANY":
+            self.profile_store_handler.cursor.execute("SELECT vector_id FROM base_company WHERE vector_id IS NOT NULL")
+        elif profile_type == "PROJECT":
+            self.profile_store_handler.cursor.execute("SELECT vector_id FROM base_project WHERE vector_id IS NOT NULL")
+        else:
+            return []
+
+        rows = self.profile_store_handler.cursor.fetchall()
+        return [row[0] for row in rows]
+
+    def get_profile(self, profile_type, profile_id):
+        if profile_type == "USER":
+            return self.get_user_profile(profile_id)
+        elif profile_type == "COMPANY":
+            return self.get_company_profile(profile_id)
+        elif profile_type == "INVESTOR":
+            return self.get_investor_profile(profile_id)
+        elif profile_type == "PROJECT":
+            return self.get_project_profile(profile_id)
+        else:
+            return None
+        
+    def get_profile_info(self, profile_type, profile):
+        if profile_type == "USER":
+            profile_info = f"""
+            {profile['bio']}
+            {profile['experience']}
+            {profile['skills']}
+            {profile['type']}
+            {profile['keywords']}
+            """.strip()
+        elif profile_type == "COMPANY":
+            profile_info = f"""
+            {profile['bio']}
+            {profile['services']}
+            {profile['keywords']}
+            """.strip()
+        elif profile_type == "INVESTOR":
+            profile_info = f"""
+            {profile['bio']}
+            {profile['portfolio']}
+            {profile['interests']}
+            {profile['keywords']}
+            {profile['preferences']}
+            """.strip()
+        elif profile_type == "PROJECT":
+            profile_info = f"""
+            {profile['bio']}
+            {profile['requirements']}
+            {profile['area_of_research']}
+            {profile['keywords']}
+            """.strip()
+        return profile_info
+
+    def search_similar_profiles(self, profile_type, profile_id):
+        profile = self.get_profile(profile_type, profile_id)
+        if not profile:
+            return []
+
+        # Generate embedding for the profile description
+        profile_info = self.get_profile_info(profile_type, profile)
+        profile_embedding = self.sentence_model.encode(profile_info, convert_to_tensor=False)
+
+        # Determine which profile types to search for
+        target_profile_types = []
+        if profile_type == "USER":
+            target_profile_types = ["USER", "PROJECT", "COMPANY"]
+        elif profile_type == "COMPANY":
+            target_profile_types = ["USER", "PROJECT"]
+        elif profile_type == "INVESTOR":
+            target_profile_types = ["PROJECT", "COMPANY"]
+
+        # Retrieve potential matches from the vector store
+        similar_profiles = {}
+        for target_type in target_profile_types:
+            target_vector_ids = self.get_vector_ids_by_profile_type(target_type)
+            if not target_vector_ids:
+                continue
+
+            # Perform vector similarity search
+            result_ids = self.vector_store_handler.search_vectors(profile_embedding, target_vector_ids, top_k=20)
+            similar_profiles[target_type] = [self.get_profile(target_type, res["id"]) for res in result_ids]
+
+        return similar_profiles
