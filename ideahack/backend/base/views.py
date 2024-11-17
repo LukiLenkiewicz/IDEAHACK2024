@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,11 +7,15 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 
 import uuid
+from sentence_transformers import SentenceTransformer
 
 from ideahack.backend.base.models import User, Project, Company, Investor
 from ideahack.backend.base.serializer import map_user_type
 from ideahack.backend.backend.settings import BASE_DIR
 from ideahack.virtual_sibling.interact import VirtualSibling
+from ideahack.profile_store import ProfileStoreHandler
+from ideahack.nls.vector_store import VectorStoreHandler
+from ideahack.nls.search_engine import HybridSearchSystem
 
 
 class SignUpView(APIView):
@@ -210,3 +215,58 @@ class Settings(APIView):
             return Response(
                 {"error": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class Feed(APIView):
+    def post(self, request, user_type, id):
+        search_query = request.data.get("search_query")
+
+        sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+        vector_store_handler = VectorStoreHandler(
+            vector_store_file="vector_store.index"
+        )
+
+        profile_store_handler = ProfileStoreHandler(
+            sentence_model=sentence_model, metadata_db_file="metadata.db"
+        )
+
+        user_profile_data = {
+            "name": "John",
+            "surname": "Doe",
+            "email": "johndoe@example.com",
+            "bio": "Experienced data scientist with a focus on machine learning and AI.",
+            "experience": "5 years working in AI and machine learning projects.",
+            "skills": ["Python", "Machine Learning", "Deep Learning"],
+            "link": "https://johndoe.com",
+            "type": "Developer",
+        }
+
+        profile_store_handler.add_user_profile(user_profile_data, vector_store_handler)
+
+        company_profile_data = {
+            "name": "Tech Innovators Inc.",
+            "email": "contact@techinnovators.com",
+            "bio": "Leading company in AI and Machine Learning solutions and software development.",
+            "services": ["AI Development", "Software Consulting"],
+            "link": "https://techinnovators.com",
+            "location": "San Francisco, CA",
+        }
+
+        profile_store_handler.add_company_profile(
+            company_profile_data, vector_store_handler
+        )
+
+        search_system = HybridSearchSystem(
+            filters_file=BASE_DIR / "filters.json",
+            vector_store_handler=vector_store_handler,
+            profile_store_handler=profile_store_handler,
+            sentence_model=sentence_model,
+        )
+
+        results = search_system.hybrid_search(search_query)
+
+        return Response(
+            {"message": "ok", "feed": JsonResponse(results, safe=False)},
+            status=status.HTTP_200_OK,
+        )

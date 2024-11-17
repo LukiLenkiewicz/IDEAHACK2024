@@ -47,7 +47,7 @@ class Project(models.Model):
         return self.name
 
 
-class Posistion(models.Model):
+class Position(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     available = models.BooleanField()

@@ -1,85 +1,124 @@
 import os
 import django
+import random
+from faker import Faker
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ideahack.backend.backend.settings")
-
-# Initialize Django
 django.setup()
+from ideahack.backend.base.models import User, Project, Company, Investor, Position
+from django.contrib.contenttypes.models import ContentType
 
-from ideahack.backend.base.models import User, Project, Company, Investor
-from ideahack.backend.backend.settings import BASE_DIR
-import sqlite3
-
-
-conn = sqlite3.connect(BASE_DIR / "db.sqlite3")
-cursor = conn.cursor()
+# Set up Django
 
 
-user = User.objects.create(
-    id=1,
-    name="John Doe",
-    email="john.doe@example.com",
-    password="hashed_password",
-    description="Freelance software developer specializing in web applications.",
-    experience="5 years of experience in full-stack development, worked on various projects for startups.",
-    skills="Python, JavaScript, React, Node.js",
-    website="https://johndoe.dev",
-    social_media="https://linkedin.com/in/johndoe",
-)
+# Initialize Faker instance for generating random data
+fake = Faker()
 
-user = User.objects.create(
-    id=6,
-    name="Mikołaj Czachorowski",
-    email="mikolaj@example.com",
-    password="hashed_password",
-    description="NLP enterprenuer, ML/AI filantrop, Chat gpt prompter.",
-    experience="5 years of experience in prompt engineering, worked on various projects.",
-    skills="Python, NLP, Prompt",
-    website="https://github.com/Micz26",
-    social_media="https://www.linkedin.com/in/mczachorowski/",
-)
 
-# Creating Project instance
-project = Project.objects.create(
-    id=1,  # Make sure ID is unique
-    name="Project Alpha",
-    description="A new web application to improve business processes.",
-    field="Software Development",
-    funds=50000,  # Example funding
-    available_positions="Frontend Developer, Backend Developer",
-)
+# Generate some users
+def create_users(num=10):
+    for _ in range(num):
+        user = User.objects.create(
+            name=fake.first_name(),
+            surname=fake.last_name(),
+            email=fake.email(),
+            password=fake.password(),
+            bio=fake.text(),
+            experience=fake.text(),
+            skills=fake.text(),
+            link=fake.url(),
+            type=random.choice(["User", "Admin", "Guest"]),
+            keywords=fake.text(),
+        )
+        print(f"Created user: {user.name} {user.surname}")
 
-# Creating Company instance
-company = Company.objects.create(
-    id=1,
-    name="Tech Solutions Inc.",
-    email="contact@techsolutions.com",
-    password="hashed_password",
-    description="We specialize in AI-driven marketing solutions.",
-    projects=project,  # Associate with the created project
-)
 
-# Creating Investor instance
-investor = Investor.objects.create(
-    id=1,  # Make sure ID is unique
-    name="Jane Smith",
-    email="jane.smith@example.com",
-    password="hashed_password",  # Use a hashed password in production (e.g., using Django's make_password)
-    description="Experienced investor in tech startups, focusing on AI and software solutions.",
-)
+# Generate some companies
+def create_companies(num=5):
+    for _ in range(num):
+        company = Company.objects.create(
+            name=fake.company(),
+            email=fake.email(),
+            password=fake.password(),
+            bio=fake.text(),
+            link=fake.url(),
+            location=fake.address(),
+            keywords=fake.text(),
+            services=fake.text(),
+        )
+        print(f"Created company: {company.name}")
 
-user2 = User.objects.create(...)
 
-user = User.objects.create(
-    id=9,
-    name="Lukasz Lenkiewicz",
-    email="lukasz@example.com",
-    password="hashed_password",
-    description="NLP enterprenuer, ML/AI filantrop, Chat gpt prompter.",
-    experience="5 years of experience in prompt engineering, worked on various projects.",
-    skills="Python, NLP, Prompt",
-    website="https://github.com/LukiLenkiewicz",
-    social_media="https://www.linkedin.com/in/lukasz-lenkiewicz/",
-)
+# Generate some investors
+def create_investors(num=5):
+    for _ in range(num):
+        investor = Investor.objects.create(
+            name=fake.first_name(),
+            email=fake.email(),
+            password=fake.password(),
+            bio=fake.text(),
+            portfolio=fake.text(),
+            interests=fake.text(),
+            preferences=fake.text(),
+            keywords=fake.text(),
+        )
+        print(f"Created investor: {investor.name}")
 
-print("Data has been populated successfully.")
+
+# Generate some projects
+def create_projects(num=5):
+    # Fetch content types for associations
+    company_type = ContentType.objects.get_for_model(Company)
+    investor_type = ContentType.objects.get_for_model(Investor)
+
+    for _ in range(num):
+        owner_type = random.choice([company_type, investor_type])
+        owner = None
+        if owner_type == company_type:
+            owner = Company.objects.order_by("?").first()
+        else:
+            owner = Investor.objects.order_by("?").first()
+
+        project = Project.objects.create(
+            name=fake.bs(),
+            bio=fake.text(),
+            owner_type=owner_type.model,
+            owner_id=owner.id,
+            content_type=owner_type,
+            requirements=fake.text(),
+            email=fake.email(),
+            pitch_deck=fake.text(),
+            area_of_research=fake.text(),
+            cost_structure=random.randint(1000, 10000),
+            keywords=fake.text(),
+        )
+        print(f"Created project: {project.name}")
+
+
+# Generate some positions
+def create_positions(num=5):
+    for _ in range(num):
+        project = Project.objects.order_by("?").first()
+        position = Position.objects.create(
+            name=fake.job(),
+            available=random.choice([True, False]),
+            link=fake.url(),
+            person_name=fake.first_name(),
+            person_surname=fake.last_name(),
+            project_id=project,
+        )
+        print(f"Created position: {position.name}")
+
+
+# Main function to populate the database
+def populate_database():
+    create_users(10)
+    create_companies(5)
+    create_investors(5)
+    create_projects(5)
+    create_positions(5)
+
+
+# Run the population function
+if __name__ == "__main__":
+    populate_database()
