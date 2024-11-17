@@ -11,6 +11,7 @@ import { AuthProvider } from './utilis/Auth';
 import PrivateRoute from './utilis/PrivateRoute'
 import SearchBar from './components/Search';
 import HomeSData from './pages/HomeSData';
+import UserChat from './components/UserChat'
 
 function App() {
   return (
@@ -52,6 +53,8 @@ function App() {
             {/* // </PrivateRoute>} > */}
         
         <Route path="/chat" element={<Chat />} />
+        <Route path="/userchat" element={<UserChat />} />
+
 
         <Route path='/login' element={<Login/>} />
         <Route path='/signup' element={<Signup/>} />

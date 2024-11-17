@@ -46,9 +46,9 @@ export default function Login() {
             });
             console.log(response)
             if (response.status == 200) {
-                const {email: userEmail, type: userType } = response.data;
-                handleUserChange({email: userEmail, type: userType})
-                localStorage.setItem("authUser", JSON.stringify({email: userEmail, type: userType}));
+                const {email:email, type:type, id:id} = response.data;
+                handleUserChange({email:email, type:type, id:id})
+                localStorage.setItem("authUser", JSON.stringify({email:email, type:type, id:id}));
                 navigate('/');
             }
         } catch (err) {

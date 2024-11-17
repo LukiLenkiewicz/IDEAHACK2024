@@ -13,7 +13,7 @@ function HomeS() {
                 const feed = JSON.parse(localStorage.getItem("authUser"));
                 console.log(feed)
                 
-                const response = await axios.get(`http://localhost:8000/api/create-project/${feed.email}/${feed.id}`);
+                const response = await axios.get(`http://localhost:8000/api/create-project/${feed.type}/${feed.id}`);
 
                 setData(response.data); // Set the response data
                 setLoading(false); // Set loading to false after data is fetched

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import { MainContainer, ChatContainer, MessageList, Message, MessageInput, TypingIndicator } from '@chatscope/chat-ui-kit-react';
 import "../Chat.css"
+import { Link, useNavigate } from 'react-router-dom';
 
 function Tmp() {
 
@@ -45,7 +46,9 @@ function Tmp() {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/api/chatgpt/", {
+      const feed = JSON.parse(localStorage.getItem("authUser"));
+      console.log(feed)
+      const response = await fetch(`http://localhost:8000/api/chatgpt/${feed.type}/${feed.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
