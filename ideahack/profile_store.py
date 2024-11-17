@@ -140,20 +140,14 @@ class ProfileStoreHandler:
             print(f"Company with email {profile_data['email']} not found.")
 
     def get_profile_by_vector_id(self, vector_id):
+        row_id = 0
         for table, fields in [
             (
                 "base_user",
                 [
                     "id",
                     "name",
-                    "surname",
-                    "email",
                     "bio",
-                    "experience",
-                    "skills",
-                    "link",
-                    "type",
-                    "vector_id",
                 ],
             ),
             (
@@ -161,20 +155,18 @@ class ProfileStoreHandler:
                 [
                     "id",
                     "name",
-                    "email",
                     "bio",
-                    "services",
-                    "link",
-                    "location",
-                    "vector_id",
                 ],
             ),
         ]:
+            row_id += 1
             self.cursor.execute(
-                f"SELECT * FROM {table} WHERE vector_id = ?", (vector_id,)
+                f"SELECT id, name, bio FROM {table} WHERE vector_id = ?", (vector_id,)
             )
             row = self.cursor.fetchone()
             if row:
-                return {field: row[idx] for idx, field in enumerate(fields)}
+                return {field: row[idx] for idx, field in enumerate(fields)} | {
+                    "rowID": row_id
+                }
 
         return None

@@ -141,5 +141,6 @@ class HybridSearchSystem:
         for res in result_ids:
             profile = self.profile_store_handler.get_profile_by_vector_id(res["id"])
             result_profiles.append(profile)
+            print(profile)
 
         return result_profiles

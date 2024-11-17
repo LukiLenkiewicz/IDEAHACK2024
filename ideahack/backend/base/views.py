@@ -381,6 +381,3 @@ class Feed(APIView):
             {"message": "ok", "feed": results},
             status=status.HTTP_200_OK,
         )
-
-
-# JsonResponse(results, safe=False)
